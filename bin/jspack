@@ -1,0 +1,22 @@
+#!/bin/bash
+set -x
+
+BASE=$(dirname $0)
+. $BASE/setenv.sh
+
+INFILE="$1"
+DIRNAME="$(dirname $1)"
+BASENAME="$(basename $INFILE .js)"
+
+OUTFILE="$DIRNAME/$BASENAME.compressed.js"
+
+rm -f $OUTFILE
+rm -f $OUTFILE.tmp
+
+# perl needs this
+cd $JSPACK
+
+echo "Compressing $INFILE ... "
+java -jar $SHRINKSAFE "$INFILE" | perl "$JSPACK/jsPacker.pl" -fq -e62 -i - > $OUTFILE
+echo "Output: $OUTFILE"
+
