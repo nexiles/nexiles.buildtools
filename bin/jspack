@@ -1,14 +1,19 @@
 #!/bin/bash
-set -x
+set +x
 
 BASE=$(dirname $0)
 . $BASE/setenv.sh
 
-INFILE="$1"
-DIRNAME="$(dirname $1)"
-BASENAME="$(basename $INFILE .js)"
+DIRNAME="$(pwd -P)/$(dirname $1)"
+BASENAME="$(basename $1 .js)"
 
+INFILE="$DIRNAME/$BASENAME.js"
 OUTFILE="$DIRNAME/$BASENAME.compressed.js"
+
+test -f "$INFILE" || {
+	echo "input file missing: $INFILE"
+	exit 10
+}
 
 rm -f $OUTFILE
 rm -f $OUTFILE.tmp
