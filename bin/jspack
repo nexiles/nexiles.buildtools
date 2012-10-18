@@ -1,27 +1,37 @@
-#!/bin/bash
-set +x
+#!env python
+import os
+import sys
+import subprocess
 
-BASE=$(dirname $0)
-. $BASE/setenv.sh
+BASE=os.path.dirname(sys.argv[0])
 
-DIRNAME="$(pwd -P)/$(dirname $1)"
-BASENAME="$(basename $1 .js)"
+shrinksafe = os.path.abspath(os.path.join(BASE, "..", "shrinksafe", "shrinksafe.jar"))
+jspack     = os.path.abspath(os.path.join(BASE, "..", "jspack"))
 
-INFILE="$DIRNAME/$BASENAME.js"
-OUTFILE="$DIRNAME/$BASENAME.compressed.js"
+if not os.path.exists(shrinksafe):
+    print >>sys.stderr, "shrinksafe missing: ", shrinksafe
+    sys.exit(5)
 
-test -f "$INFILE" || {
-	echo "input file missing: $INFILE"
-	exit 10
-}
+if not os.path.exists(jspack):
+    print >>sys.stderr, "jspack missing: ", jspack
+    sys.exit(5)
 
-rm -f $OUTFILE
-rm -f $OUTFILE.tmp
+INFILE=sys.argv[1]
 
-# perl needs this
-cd $JSPACK
+if not os.path.exists(INFILE):
+    print >>sys.stderr, "infile missing: ", INFILE
+    sys.exit(10)
 
-echo "Compressing $INFILE ... "
-java -jar $SHRINKSAFE "$INFILE" | perl "$JSPACK/jsPacker.pl" -fq -e62 -i - > $OUTFILE
-echo "Output: $OUTFILE"
+INFILE=os.path.abspath(INFILE)
+print >>sys.stderr, "INFILE : ", INFILE
 
+OUTFILE=INFILE.replace(".js", ".compressed.js")
+print >>sys.stderr, "OUTFILE: ", OUTFILE
+
+CMD = "java -jar %(shrinksafe)s '%(INFILE)s' | perl 'jsPacker.pl' -fq -e62 -i - > %(OUTFILE)s" % locals()
+print >>sys.stderr, "CMD    : ", CMD
+
+os.chdir(jspack)
+subprocess.call(CMD, shell=True)
+
+# vim: set ft=python ts=4 sw=4 expandtab tw=78 :
