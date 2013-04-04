@@ -1,3 +1,4 @@
+import uuid
 import zipfile
 import datetime
 from hashlib import sha256
@@ -19,9 +20,15 @@ from fabric.api import prompt
 from fabric.colors import green, yellow, red
 from fabric.contrib.console import confirm
 
-__all__ = ["manifest", "make_manifest_file"]
+__all__ = ["manifest", "make_manifest_file", "generate_urn"]
 
 from nxfab import eggs
+
+@task
+def generate_urn():
+    """ generate a URN
+    """
+    return uuid.uuid4().urn
 
 @task
 def manifest():
