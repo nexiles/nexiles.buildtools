@@ -28,7 +28,7 @@ from nxfab import eggs
 def generate_urn():
     """ generate a URN
     """
-    return uuid.uuid4().urn
+    print "Your URN, fresh from the press: ", green(uuid.uuid4().urn)
 
 @task
 def manifest():
