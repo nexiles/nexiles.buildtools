@@ -61,9 +61,13 @@ You can extend your `fabfile.py` as follows::
 
     from fabric.api import env
 
-    sys.path.append(os.path.expanduser("%s/fab" % os.getcwd()))
+    # add the nexiles.buildtools `fab` package to the sys.path
+    sys.path.append(os.path.expanduser("~/develop/nexiles/nexiles.buildtools/fab"))
 
+    # set the project name
     env.projectname = "nexiles.buildtools"
+
+    # import the documentation tasks
     from docs import build_docs, publish_docs
 
 
