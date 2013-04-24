@@ -47,7 +47,7 @@ def get_version():
 def version_string(version=None):
     if not version:
         version = get_version()
-    return green("version %(version)s build %(build)s date %(date)s" % (version))
+    return "version %(version)s build %(build)s date %(date)s" % (version)
 
 @task
 def bump_version():

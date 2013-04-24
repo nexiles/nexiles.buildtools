@@ -1,3 +1,4 @@
+import os
 import zipfile
 import datetime
 from hashlib import sha256
@@ -19,6 +20,8 @@ from fabric.api import prompt
 from fabric.colors import green, yellow, red
 from fabric.contrib.console import confirm
 
+from version import get_version
+
 def eggs():
     """eggs -> generator
 
@@ -38,5 +41,45 @@ def egg_for_package(p):
     else:
         egg = p
     return egg.replace("VERSION", env.package_version)
+
+def setup_version(version=None, ask=False):
+    if not version:
+        version_info = get_version()
+        if ask:
+            prompt("Which version: ", default=version_info["version"], key="package_version")
+        else:
+            env.package_version = version_info["version"]
+    else:
+        env.package_version = version
+
+def setup_env():
+    """setup_env -- set up fab global environment.
+
+    XXX: This should use configparser to fetch settings from projectname.ini or project.ini
+    """
+    def versioned_file(fn, ext="tgz"):
+        s = "%(projectname)s-" + fn + "-%(package_version)s." + ext
+        return s % env
+
+    env.dropbox       = os.path.expanduser("~/Dropbox")
+    env.build_dir     = os.path.abspath("build")
+    env.docs_dir     = os.path.abspath("docs")
+    env.dist_dir      = os.path.join(env.dropbox, "dist", env.projectname, "%(projectname)s-%(package_version)s" % env)
+    env.doc_package       = os.path.join(env.build_dir, versioned_file("doc"))
+    env.templates_package = os.path.join(env.build_dir, versioned_file("templates", "zip"))
+    env.static_package    = os.path.join(env.build_dir, versioned_file("static", "zip"))
+
+    if not os.path.exists(env.build_dir):
+        print red("creating build dir.")
+        local("mkdir " + env.build_dir)
+    if not os.path.exists(env.dist_dir):
+        print red("creating dist dir.")
+        local("mkdir -p %s" % env.dist_dir)
+
+@task
+def print_env():
+    for key in "projectname package_version build_dir dist_dir version_file".split():
+        print yellow(key), green(getattr(env, key))
+
 
 # vim: set ft=python ts=4 sw=4 expandtab :
