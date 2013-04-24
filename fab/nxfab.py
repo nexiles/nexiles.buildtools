@@ -22,6 +22,8 @@ from fabric.contrib.console import confirm
 
 from version import get_version
 
+__all__ = ["eggs", "setup_env", "setup_version", "print_env"]
+
 def eggs():
     """eggs -> generator
 

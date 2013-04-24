@@ -7,16 +7,17 @@ import os
 from fabric.api import task
 from fabric.api import env
 from fabric.api import lcd
-from fabric.api import local
+from fabric.api import local, run
 from fabric.api import prompt
 from fabric.api import abort
 from fabric.api import prefix
 from fabric.colors import green
+from fabric.api import settings, hide
 
 from version import get_version
 from build import zip_package
 
-__all__ = ["build_docs", "publish_docs"]
+__all__ = ["build_docs", "publish_docs", "package_docs"]
 
 
 def publish(projectname, category="internal"):
@@ -25,12 +26,16 @@ def publish(projectname, category="internal"):
     dest = "/srv/docs/%(category)s/%(projectname)s" % locals()
     dest = dest + "/%(package_version)s" % env
 
-    local("ssh %s 'mkdir -p %s'" % (HOST, dest))
-    local("rsync -avz --del %s/_build/html/ %s:%s" % (env.docs_dir, HOST, dest))
-    local("ssh %s 'cd %s && cd .. && rm -f latest && ln -s %s latest'" % (HOST, dest, env.package_version))
+    with settings(host_string=HOST), settings(hide("stdout")):
+        run("mkdir -p %s" % dest)
+
+        local("rsync -avz --del %s/_build/html/ %s:%s" % (env.docs_dir, HOST, dest))
+
+        run("cd %s && cd .. && rm -f latest && ln -s %s latest" % (dest, env.package_version))
+
 
 def make():
-    with lcd("docs"):
+    with lcd("docs"), settings(hide("stdout")):
         local("make html")
 
 @task

@@ -15,6 +15,7 @@ from fabric.api import prompt
 from fabric.colors import green, yellow, red
 from fabric.contrib.console import confirm
 
+__all__ = ["version_string", "bump_version", "version"]
 
 def write_version_info():
     """ updates the build and date of the version module
