@@ -1,4 +1,7 @@
 import os
+
+from contextlib import nested
+
 from fabric.api import task
 from fabric.api import local
 #from fabric.api import run
@@ -20,7 +23,7 @@ __all__ = ["build_templates", "build_static", "build_eggs"]
 
 def zip_package(package, directory, root):
     """create a package zip file"""
-    with lcd(directory), settings(hide("stdout")):
+    with nested(lcd(directory), settings(hide("stdout"))):
         local("zip -r %(package)s %(root)s" % locals())
 
 @task

@@ -3,6 +3,7 @@
 # copyright (c) 2013 nexiles GmbH
 
 import os
+from contextlib import nested
 
 from fabric.api import task
 from fabric.api import env
@@ -13,6 +14,7 @@ from fabric.api import abort
 from fabric.api import prefix
 from fabric.colors import green
 from fabric.api import settings, hide
+
 
 from version import get_version
 from build import zip_package
@@ -26,7 +28,7 @@ def publish(projectname, category="internal"):
     dest = "/srv/docs/%(category)s/%(projectname)s" % locals()
     dest = dest + "/%(package_version)s" % env
 
-    with settings(host_string=HOST), settings(hide("stdout")):
+    with nested(settings(host_string=HOST), settings(hide("stdout"))):
         run("mkdir -p %s" % dest)
 
         local("rsync -avz --del %s/_build/html/ %s:%s" % (env.docs_dir, HOST, dest))
@@ -35,7 +37,7 @@ def publish(projectname, category="internal"):
 
 
 def make():
-    with lcd("docs"), settings(hide("stdout")):
+    with nested(lcd("docs"), settings(hide("stdout"))):
         local("make html")
 
 @task
