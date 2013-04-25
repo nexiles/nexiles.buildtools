@@ -74,9 +74,6 @@ def setup_env():
     if not os.path.exists(env.build_dir):
         print red("creating build dir.")
         local("mkdir " + env.build_dir)
-    if not os.path.exists(env.dist_dir):
-        print red("creating dist dir.")
-        local("mkdir -p %s" % env.dist_dir)
 
 @task
 def print_env():
