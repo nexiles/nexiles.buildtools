@@ -62,6 +62,6 @@ def bump_version():
 @task
 def version():
     """Print current version of nexiles.gateway.attributeservice package."""
-    print "current version: ", version_string()
+    print green(version_string())
 
 # vim: set ft=python ts=4 sw=4 expandtab :

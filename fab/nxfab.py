@@ -76,9 +76,12 @@ def setup_env():
         local("mkdir " + env.build_dir)
 
 @task
-def print_env():
-    for key in "projectname package_version build_dir dist_dir version_file".split():
-        print yellow(key), green(getattr(env, key))
-
+def print_env(full=False):
+    if full:
+        for key in env.keys():
+            print yellow(key), green(getattr(env, key))
+    else:
+        for key in "projectname package_version build_dir dist_dir version_file".split():
+            print yellow(key), green(getattr(env, key))
 
 # vim: set ft=python ts=4 sw=4 expandtab :
