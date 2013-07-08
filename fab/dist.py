@@ -11,9 +11,12 @@ from fabric.api import prompt
 from fabric.colors import green, yellow, red
 from fabric.contrib.console import confirm
 
-from nxfab import eggs
+from nxfab import eggs, egg_for_customer
 
 def dist_package(package):
+    if not os.path.exists(env.dist_dir):
+        print red("creating dist dir: %s" % env.dist_dir)
+        local("mkdir -p '%s'" % env.dist_dir )
     local("cp %s %s" % (package, env.dist_dir))
 
 @task
@@ -38,7 +41,10 @@ def dist_docs():
 def dist_eggs():
     # copy stuff
     for package, egg in eggs():
-        local("cp src/%s/dist/%s %s" % (package, egg, env.dist_dir))
+        if env.customer == "nexiles":
+            local("cp src/%s/dist/%s %s" % (package, egg, env.dist_dir))
+        else:
+            local("cp src/%s/dist/%s %s" % (package, egg_for_customer(egg), env.dist_dir))
         print yellow("disted %s" % egg)
 
 # vim: set ft=python ts=4 sw=4 expandtab :

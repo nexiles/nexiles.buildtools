@@ -22,7 +22,7 @@ from fabric.contrib.console import confirm
 
 from version import get_version
 
-__all__ = ["eggs", "setup_env", "setup_version", "print_env"]
+__all__ = ["eggs", "egg_for_customer", "setup_env", "setup_version", "print_env"]
 
 def eggs():
     """eggs -> generator
@@ -43,6 +43,17 @@ def egg_for_package(p):
     else:
         egg = p
     return egg.replace("VERSION", env.package_version)
+
+def egg_for_customer(egg):
+    """egg_for_customer(egg) -> string
+
+    Return branded egg name.
+
+    :returns: string
+    """
+    if env.customer == "nexiles":
+        return egg
+    return egg.replace(".egg", "-%s.egg" % env.customer)
 
 def setup_version(version=None, ask=False):
     if not version:
