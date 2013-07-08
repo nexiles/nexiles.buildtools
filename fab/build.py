@@ -93,9 +93,8 @@ def build_eggs(customer="nexiles"):
             # package resources
             local("zip -ur dist/%s %s" % (egg, resources))
 
-            # when markrd, rename egg
-            if marked:
-                local("mv dist/%s dist/%s" %(egg, egg_for_customer(egg)))
+            # rename egg with customer name
+            local("mv dist/%s dist/%s" %(egg, egg_for_customer(egg)))
 
 @task
 def build_app(version=None, bump_vers=False):

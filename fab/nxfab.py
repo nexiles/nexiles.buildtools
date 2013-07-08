@@ -51,8 +51,6 @@ def egg_for_customer(egg):
 
     :returns: string
     """
-    if env.customer == "nexiles":
-        return egg
     return egg.replace(".egg", "-%s.egg" % env.customer)
 
 def setup_version(version=None, ask=False):

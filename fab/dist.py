@@ -41,10 +41,7 @@ def dist_docs():
 def dist_eggs():
     # copy stuff
     for package, egg in eggs():
-        if env.customer == "nexiles":
-            local("cp src/%s/dist/%s %s" % (package, egg, env.dist_dir))
-        else:
-            local("cp src/%s/dist/%s %s" % (package, egg_for_customer(egg), env.dist_dir))
-        print yellow("disted %s" % egg)
+        local("cp src/%s/dist/%s %s" % (package, egg_for_customer(egg), env.dist_dir))
+        print yellow("disted %s" % egg_for_customer(egg))
 
 # vim: set ft=python ts=4 sw=4 expandtab :

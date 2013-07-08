@@ -20,6 +20,7 @@ def reload(path=None):
     """reload -- trigger a nexiles|gateway servlet reload."""
     if path is None:
         path = "version"
+
     host = local('grep "^java.rmi.server.hostname" $WT_HOME/codebase/wt.properties | cut -d = -f2', capture=True)
     user = os.environ.get("WTUSER", "orgadmin")
     pw   = os.environ.get("WTPASS", "orgadmin")
