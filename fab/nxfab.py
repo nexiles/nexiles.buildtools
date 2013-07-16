@@ -60,6 +60,9 @@ def setup_version(version=None, ask=False):
             prompt("Which version: ", default=version_info["version"], key="package_version")
         else:
             env.package_version = version_info["version"]
+            env.version_build = version_info["build"]
+            env.version_date = version_info["date"]
+            env.version_version = version_info["version"]
     else:
         env.package_version = version
 
