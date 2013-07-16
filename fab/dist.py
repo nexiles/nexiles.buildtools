@@ -13,11 +13,45 @@ from fabric.contrib.console import confirm
 
 from nxfab import eggs, egg_for_customer
 
-def dist_package(package):
+def version_stamp(path, remove_dir=False):
+    """version_stamp(path) -> path
+
+    Add version to path.
+
+    >>> env.package_version = "1.0"
+    >>> version_stamp("foo/par/baz.ext")
+    "foo/bar/baz-1.0.ext"
+
+    >>> version_stamp("foo/bar/baz.ext", remove_dir=True)
+    "baz-1.0.ext"
+
+    """
+    part, ext = os.path.splitext(path)
+    if remove_dir:
+        d, f = os.path.split(part)
+        return "%s-%s%s" % (f, env.package_version, ext)
+    return "%s-%s%s" % (part, env.package_version, ext)
+
+def dist_package(package, versionize=False):
+    """dist_package(package, versionize) -> None
+
+    Copies package to dist dir.  If versionize is True, then the destination
+    file will be version-stamped.
+
+    side effects:
+    - This function creates env.dist_dir if not there.
+    - This function checks if the package exists in the file system.
+    """
     if not os.path.exists(env.dist_dir):
         print red("creating dist dir: %s" % env.dist_dir)
         local("mkdir -p '%s'" % env.dist_dir )
-    local("cp %s %s" % (package, env.dist_dir))
+    if not os.path.exists(package):
+        print red("PACKAGE DOES NOT EXIST: %s", package)
+        raise RuntimeError(package)
+    if versionize:
+        local("cp %s %s/%s" % (package, env.dist_dir, version_stamp(package, remove_dir=True)))
+    else:
+        local("cp %s %s" % (package, env.dist_dir))
 
 @task
 def dist_templates():
