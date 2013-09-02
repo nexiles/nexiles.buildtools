@@ -70,6 +70,18 @@ LICENSE = {
 ################################################################################
 
 @task
+def build_pth():
+    """build a suitable pth file for windows and unix."""
+    env.service_name = env.projectname.split(".")[-1]
+    with file("%(build_dir)s/%(service_name)s-windows.pth" % env, "w") as all_pth:
+        for package, egg in eggs():
+            print >>all_pth, ".\\%s" % egg
+
+    with file("%(build_dir)s/%(service_name)s-unix.pth" % env, "w") as all_pth:
+        for package, egg in eggs():
+            print >>all_pth, "./%s" % egg
+
+@task
 def build(customer=None):
     """Deploy nexiles gateway service to server"""
     if customer:
@@ -86,6 +98,7 @@ def build(customer=None):
         print "for customer    : " + red(env.customer)
         build_eggs()
 
+    build_pth()
     build_docs()
     package_docs()
 
@@ -101,6 +114,10 @@ def deploy(version=None, customer=None):
     """deploy nexiles gateway service jar and web app to server"""
     if customer:
         env.customer = customer
+
+    if "customer" not in env or env.customer is None:
+        raise RuntimeError("no customer specified and env.customer not set.")
+
     print "deploying version : " + yellow(env.package_version)
     print "for customer      : " + red(env.customer)
 
@@ -145,13 +162,8 @@ def dist(version=None, customer=None):
     print "done."
 
     env.service_name = env.projectname.split(".")[-1]
-    with file("%(dist_dir)s/%(service_name)s-windows.pth" % env, "w") as all_pth:
-        for package, egg in eggs():
-            print >>all_pth, ".\\%s" % egg
-
-    with file("%(dist_dir)s/%(service_name)sunix.pth" % env, "w") as all_pth:
-        for package, egg in eggs():
-            print >>all_pth, "./%s" % egg
+    dist_package("%(build_dir)s/%(service_name)s-windows.pth" % env);
+    dist_package("%(build_dir)s/%(service_name)s-unix.pth" % env);
 
     with file("%(dist_dir)s/%(service_name)ssite.xconf" % env, "w") as xconf:
         print >>xconf, """<?xml version="1.0" encoding="UTF-8"?>
