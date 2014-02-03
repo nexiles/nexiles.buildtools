@@ -31,7 +31,7 @@ def publish(projectname, category="internal"):
     with nested(settings(host_string=HOST), settings(hide("stdout"))):
         run("mkdir -p %s" % dest)
 
-        local("rsync -avz --del %s/_build/html/ %s:%s" % (env.docs_dir, HOST, dest))
+        local("rsync -rlvz --del %s/_build/html/ %s:%s" % (env.docs_dir, HOST, dest))
 
         run("cd %s && cd .. && rm -f latest && ln -s %s latest" % (dest, env.package_version))
 

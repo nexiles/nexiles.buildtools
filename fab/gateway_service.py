@@ -56,8 +56,8 @@ from gateway import reload
 
 # license file related configuration
 # --------------------------------
-env.customer_list= "nexiles settr cargotec rotator mtc"
-env.license_tpl  = """# -*- coding: utf-8 -*-
+env.customer_list = "nexiles settr cargotec rotator mtc schaeffler"
+env.license_tpl   = """# -*- coding: utf-8 -*-
 LICENSE = {
         "customer_id": "%(customer)s",
         "key":         "%(package_uuid)s"
@@ -161,9 +161,14 @@ def dist(version=None, customer=None):
         dist_eggs()
     print "done."
 
+    if "additional_packages" in env:
+        for p in env.additional_packages:
+            print red("deploying additional package: " + p)
+            dist_package(p, versionize=True)
+
     env.service_name = env.projectname.split(".")[-1]
-    dist_package("%(build_dir)s/%(service_name)s-windows.pth" % env);
-    dist_package("%(build_dir)s/%(service_name)s-unix.pth" % env);
+    dist_package("%(build_dir)s/%(service_name)s-windows.pth" % env)
+    dist_package("%(build_dir)s/%(service_name)s-unix.pth" % env)
 
     with file("%(dist_dir)s/%(service_name)ssite.xconf" % env, "w") as xconf:
         print >>xconf, """<?xml version="1.0" encoding="UTF-8"?>
@@ -173,12 +178,12 @@ def dist(version=None, customer=None):
 </Configuration>
 """ % env
 
-
     print
     print
     print "customers dist'd : ", red(customer_list)
     print "version          : ", red(env.package_version)
     print "code packages    : ", red(" ".join([egg_for_customer(egg) for package, egg in eggs()]))
+    print "additional pkgs  : ", red(" ".join(env.get("additional_packages", [])))
     print "doc  packages    : ", red(env.doc_package)
     print "dist dir         : ", red(env.dist_dir)
 

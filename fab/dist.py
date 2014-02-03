@@ -46,7 +46,7 @@ def dist_package(package, versionize=False):
         print red("creating dist dir: %s" % env.dist_dir)
         local("mkdir -p '%s'" % env.dist_dir )
     if not os.path.exists(package):
-        print red("PACKAGE DOES NOT EXIST: %s", package)
+        print red("PACKAGE DOES NOT EXIST: %s" % package)
         raise RuntimeError(package)
     if versionize:
         local("cp %s %s/%s" % (package, env.dist_dir, version_stamp(package, remove_dir=True)))
