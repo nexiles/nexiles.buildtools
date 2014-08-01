@@ -22,6 +22,11 @@ def reload(path=None):
         path = "version"
 
     host = local('grep "^java.rmi.server.hostname" $WT_HOME/codebase/wt.properties | cut -d = -f2', capture=True)
+    if not host:
+        host = local('grep "^wt.rmi.server.hostname" $WT_HOME/codebase/wt.properties | cut -d = -f2', capture=True)
+        if not host:
+            raise RuntimeError("Can't determine hostname.")
+
     user = os.environ.get("WTUSER", "orgadmin")
     pw   = os.environ.get("WTPASS", "orgadmin")
     cmd  = "curl -i --user {user}:{pw} -X GET -H 'nexiles-gateway-reload: true' http://{host}/Windchill/servlet/nexiles/tools/{path}".format(user=user, pw=pw, host=host, path=path)
