@@ -152,7 +152,7 @@ def dist(version=None, customer=None):
     print "Creating dist packages for version: " + yellow(env.package_version)
 
     dist_docs()
-    publish_docs()
+    #publish_docs()
 
     print "dist for "
     for customer in customer_list:
