@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging, os, click, zipfile, shutil
 import ConfigParser
-from resources import *
+from api import *
+from fabric.api import task
 
 config = ConfigParser.ConfigParser()
 config.read(os.path.expanduser("~/.nxdocserver"))
@@ -10,17 +11,26 @@ DROPBOX = config.get("Docserver", "dropbox")
 username = config.get("Login", "user")
 password = config.get("Login", "password")
 
-plone_api = API(DOCSERVER_URL, "plone", username, password)
-docs_api  = API(DOCSERVER_URL, "docs", username, password)
-
-folders   = PloneFolders(plone_api)
-projects  = Projects(docs_api)
-docmetas  = Docmetas(docs_api)
+folder_api = FolderAPI(DOCSERVER_URL, username, password)
+doc_api  = DocmetaAPI(DOCSERVER_URL, username, password)
+project_api  = ProjectAPI(DOCSERVER_URL, username, password)
 
 @click.group()
 @click.option("--debug", "-d", is_flag=True)
 def cli(debug):
     logging.basicConfig(level=(debug and logging.DEBUG) or logging.ERROR, format="%(asctime)s [%(levelname)-7s] [line %(lineno)d] %(name)s: %(message)s")
+
+################################################################################
+# fabric tasks
+################################################################################
+
+@task
+def publish_doc(project, title, version, zip, icon=None):
+    """ Create meta data for the documentation and copy its files to the Dropbox
+        folder specified in $HOME/.nxdocserver
+    """
+    create_doc(project, title, version, zip, icon)
+
 
 ################################################################################
 # Docmeta C(R)UD commands
@@ -33,28 +43,28 @@ def cli(debug):
 @click.option("--zip", type=click.Path(exists=True), required=True, help="Location of the zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def create_doc(project, title, version, zip, icon):
-    parent = projects.find("id", project)
+    parent = project_api.find("id", project)
     if not parent:
         raise click.ClickException("Parent project not found. Aborting")
 
     # Check for duplicates
-    for doc in parent["docs"]:
+    for doc in parent:
         if doc["title"] == title and doc["version"] == version:
             raise click.ClickException("Documentation already exists. Aborting")
 
-    # create meta data
-    doc = docmetas.create(parent["uid"], title=title, version=version)
+    # return meta data
+    doc = doc_api.create(parent["uid"], title=title, version=version)
 
     # copy and unpack data
     basedir = os.path.join(DROPBOX, project, doc["id"])
-    dst = os.path.join(basedir, version)
+    dst = os.path.join(basedir, doc["version"])
     zipfile.ZipFile(zip).extractall(dst)
     shutil.copyfile(zip, dst + ".zip")
     if icon:
         shutil.copyfile(icon, os.path.join(basdir, "icon.png"))
 
         # add the icon to the docmeta
-        docmetas.update(doc["uid"], doc_icon=os.path.join(project, doc["id"], "icon.png"))
+        doc_api.update(docmeta["uid"], doc_icon=os.path.join(project, doc["id"], "icon.png"))
 
 @click.command()
 @click.argument("name")
@@ -65,11 +75,11 @@ def create_doc(project, title, version, zip, icon):
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def update_doc(name, project, title, version, zip, icon):
 
-    doc = projects.find_docmeta(name, project)
+    doc = project_api.find_docmeta(name, project)
 
     # Check for duplicates
     # if kw["title"] or kw["version"]:
-    #     project = projects.find("id", project)
+    #     project = project_api.find("id", project)
     #     for d in project["docs"]:
     #         if d["title"] == (kw["title"] or doc["title"]) and d["version"] == (kw["version"] or doc["version"]):
     #             raise click.ClickException("Documentation already exists. Aborting")
@@ -106,16 +116,16 @@ def update_doc(name, project, title, version, zip, icon):
         # this will NOT update the id!
         kw["title"] = title
 
-    docmetas.update(doc["uid"], **kw)
+    doc_api.update(doc["uid"], **kw)
 
 @click.command()
 @click.argument("name")
 @click.option("--project", required=True, help="ID of the parent project")
 def delete_doc(project, name):
-    doc = projects.find_docmeta(name, project)
+    doc = project_api.find_docmeta(name, project)
 
     # remove meta data
-    docmetas.delete(doc["uid"])
+    doc_api.delete(doc["uid"])
 
     # remove files
     dst = os.path.join(DROPBOX, project, doc["id"])
@@ -135,15 +145,15 @@ def delete_doc(project, name):
 def create_project(project, **kw):
 
     # Check for duplicates
-    if projects.find("title", kw["title"]):
-            raise click.ClickException("A Project with this title already exists")
+    if project_api.find("title", kw["title"]):
+        raise click.ClickException("A Project with this title already exists")
 
     if project:
         # nested project
-        parent = projects.find("id", project)
+        parent = project_api.find("id", project)
     else:
         # add to documentation folder as default
-        parent = folders.find("title", "Documentation")
+        parent = folder_api.find("title", "Documentation")
 
     if not parent:
         raise click.ClickException("Parent not found. Aborting")
@@ -152,7 +162,7 @@ def create_project(project, **kw):
         kw["github"] = "https://github.com/nexiles/" + kw["title"]
 
     # create meta data
-    project = projects.create(parent["uid"], **kw)
+    project = project_api.create(parent["uid"], **kw)
 
     # create directory
     os.mkdir(os.path.join(DROPBOX, project["id"]))
@@ -167,24 +177,24 @@ def update_project(name, **kw):
         raise click.ClickException("Nothing to update. Aborting")
 
     # Check for duplicates
-    # if kw["title"] and projects.find("title", kw["title"]):
+    # if kw["title"] and project_api.find("title", kw["title"]):
     #     raise click.ClickException("A Project with this title already exists. Aborting")
 
-    project = projects.find("id", name)
+    project = project_api.find("id", name)
     if not project:
         raise click.ClickException("Project not found. Aborting")
 
-    projects.update(project["uid"], **kw)
+    project_api.update(project["uid"], **kw)
 
 @click.command()
 @click.argument("name")
 def delete_project(name):
-    project = projects.find("id", name)
+    project = project_api.find("id", name)
     if not project:
         raise click.ClickException("Project not found. Aborting")
 
     # remove meta data
-    projects.delete(project["uid"])
+    project_api.delete(project["uid"])
 
     # remove the directory and all files
     dst = os.path.join(DROPBOX, name)
@@ -196,44 +206,43 @@ def delete_project(name):
 def test():
 
     # list all projects
-    for p in projects:
-        print "{title} {state} {github}".format(**p)
+    for p in project_api.list():
+        print p["title"] + " " + p["state"] + " " + p["github"]
 
-    print "Nexiles Gateway" in projects
 
     # TEST PROJECTS API
     # -----------------------------
 
     # create a project
-    parent_uid = folders.find("title", "Documentation")["uid"]
-    p = projects.create(parent_uid, title="Test Project", github="https://github.com/nexiles/nexiles.plone.docs")
+    parent_uid = folder_api.find("title", "Documentation")["uid"]
+    p = project_api.create(parent_uid, title="Test Project", github="https://github.com/nexiles/nexiles.plone.docs")
 
     # update
-    p = projects.update(p["uid"], github="http://google.de")
+    p = project_api.update(p["uid"], github="http://google.de")
     assert p["github"] == "http://google.de"
 
     # TEST DOCMETAS
     # -----------------------------
 
     # create a project
-    d = docmetas.create(
+    d = doc_api.create(
         p["uid"],
         title="Test Doc",
         version="0.0.1",
         doc_icon=None)
 
     # update
-    d = docmetas.update(d["uid"], doc_icon="foo.jpg")
+    d = doc_api.update(d["uid"], doc_icon="foo.jpg")
     assert d["doc_icon"].endswith("foo.jpg")
 
     # CLEANUP
     # -------
 
     # delete docmeta
-    docmetas.delete(d["uid"])
+    doc_api.delete(d["uid"])
 
     # delete project
-    projects.delete(p["uid"])
+    project_api.delete(p["uid"])
 
 
 cli.add_command(create_doc)
