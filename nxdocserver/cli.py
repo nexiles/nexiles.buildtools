@@ -28,8 +28,43 @@ def cli(debug):
 def publish_doc(project, title, version, zip, icon=None):
     """ Create meta data for the documentation and copy its files to the Dropbox
         folder specified in $HOME/.nxdocserver
+        Before this command is run make sure the parent project exists
     """
-    create_doc(project, title, version, zip, icon)
+
+    doc = Docmeta({
+        "parent_id": project,
+        "title": title,
+        "version": version,
+        "icon": icon
+    })
+
+    doc.save()
+
+    # copy and unpack data
+    basedir = os.path.join(DROPBOX, project, doc["id"])
+    dst = os.path.join(basedir, doc["version"])
+    zipfile.ZipFile(zip).extractall(dst)
+    shutil.copyfile(zip, dst + ".zip")
+    if icon:
+        shutil.copyfile(icon, os.path.join(basdir, "icon.png"))
+
+@task
+def publish_project(title, github=None, project=None):
+    """ Create meta data for the project and create a new directory in the Dropbox
+        folder specified in $HOME/.nxdocserver
+    """
+
+    p = Project({
+        "parent_id": project,
+        "title": title,
+        "github": github or "https://github.com/nexiles/" + title
+    })
+
+    # save meta data
+    p.save()
+
+    # create directory
+    os.mkdir(os.path.join(DROPBOX, p["id"]))
 
 
 ################################################################################
@@ -42,29 +77,9 @@ def publish_doc(project, title, version, zip, icon=None):
 @click.option("--version", default="0.1.0", help="Version of the documentation")
 @click.option("--zip", type=click.Path(exists=True), required=True, help="Location of the zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
-def create_doc(project, title, version, zip, icon):
-    parent = project_api.find("id", project)
-    if not parent:
-        raise click.ClickException("Parent project not found. Aborting")
+def create_doc(**kwargs):
 
-    # Check for duplicates
-    for doc in parent:
-        if doc["title"] == title and doc["version"] == version:
-            raise click.ClickException("Documentation already exists. Aborting")
-
-    # return meta data
-    doc = doc_api.create(parent["uid"], title=title, version=version)
-
-    # copy and unpack data
-    basedir = os.path.join(DROPBOX, project, doc["id"])
-    dst = os.path.join(basedir, doc["version"])
-    zipfile.ZipFile(zip).extractall(dst)
-    shutil.copyfile(zip, dst + ".zip")
-    if icon:
-        shutil.copyfile(icon, os.path.join(basdir, "icon.png"))
-
-        # add the icon to the docmeta
-        doc_api.update(docmeta["uid"], doc_icon=os.path.join(project, doc["id"], "icon.png"))
+    publish_doc(**kwargs)
 
 @click.command()
 @click.argument("name")
@@ -75,21 +90,14 @@ def create_doc(project, title, version, zip, icon):
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def update_doc(name, project, title, version, zip, icon):
 
-    doc = project_api.find_docmeta(name, project)
+    doc = project_api.find_docmeta(project, name)
 
-    # Check for duplicates
-    # if kw["title"] or kw["version"]:
-    #     project = project_api.find("id", project)
-    #     for d in project["docs"]:
-    #         if d["title"] == (kw["title"] or doc["title"]) and d["version"] == (kw["version"] or doc["version"]):
-    #             raise click.ClickException("Documentation already exists. Aborting")
+    if not doc:
+        raise click.ClickException("Documentation not found. Aborting")
 
-    kw = dict()
     basedir = os.path.join(DROPBOX, project, doc["id"])
 
     if version:
-        kw["version"] = version
-
         src = os.path.join(basedir, doc["version"])
         dst = os.path.join(basedir, version)
 
@@ -99,14 +107,14 @@ def update_doc(name, project, title, version, zip, icon):
         # rename zip file
         shutil.move(src + ".zip", dst + ".zip")
 
-    dst = os.path.join(basedir, (version or doc["version"]))
+        doc["version"] = version
+
+    dst = os.path.join(basedir, doc["version"])
 
     if zip:
-        kw["zip"] = zip
-
         # copy and extract new file
-        zipfile.ZipFile(kw["zip"]).extractall(dst)
-        shutil.copyfile(kw["zip"], dst + ".zip")
+        zipfile.ZipFile(zip).extractall(dst)
+        shutil.copyfile(zip, dst + ".zip")
 
     if icon:
         # copy icon to same directory as before
@@ -114,18 +122,21 @@ def update_doc(name, project, title, version, zip, icon):
 
     if title:
         # this will NOT update the id!
-        kw["title"] = title
+        doc["title"] = title
 
-    doc_api.update(doc["uid"], **kw)
+    doc.save()
 
 @click.command()
 @click.argument("name")
 @click.option("--project", required=True, help="ID of the parent project")
 def delete_doc(project, name):
-    doc = project_api.find_docmeta(name, project)
+    doc = project_api.find_docmeta(project, name)
+
+    if not doc:
+        raise click.ClickException("Documentation not found. Aborting")
 
     # remove meta data
-    doc_api.delete(doc["uid"])
+    doc.delete()
 
     # remove files
     dst = os.path.join(DROPBOX, project, doc["id"])
@@ -142,30 +153,9 @@ def delete_doc(project, name):
 @click.option("--project", help="ID of the parent project")
 @click.option("--title", required=True, help="Title of the project")
 @click.option("--github", help="GitHub URL of the project")
-def create_project(project, **kw):
+def create_project(**kwargs):
 
-    # Check for duplicates
-    if project_api.find("title", kw["title"]):
-        raise click.ClickException("A Project with this title already exists")
-
-    if project:
-        # nested project
-        parent = project_api.find("id", project)
-    else:
-        # add to documentation folder as default
-        parent = folder_api.find("title", "Documentation")
-
-    if not parent:
-        raise click.ClickException("Parent not found. Aborting")
-
-    if not kw["github"]:
-        kw["github"] = "https://github.com/nexiles/" + kw["title"]
-
-    # create meta data
-    project = project_api.create(parent["uid"], **kw)
-
-    # create directory
-    os.mkdir(os.path.join(DROPBOX, project["id"]))
+    publish_project(**kwargs)
 
 @click.command()
 @click.argument("name")
@@ -176,15 +166,12 @@ def update_project(name, **kw):
     if not kw:
         raise click.ClickException("Nothing to update. Aborting")
 
-    # Check for duplicates
-    # if kw["title"] and project_api.find("title", kw["title"]):
-    #     raise click.ClickException("A Project with this title already exists. Aborting")
-
     project = project_api.find("id", name)
     if not project:
         raise click.ClickException("Project not found. Aborting")
 
-    project_api.update(project["uid"], **kw)
+    project.update(kw)
+    project.save()
 
 @click.command()
 @click.argument("name")
@@ -194,7 +181,7 @@ def delete_project(name):
         raise click.ClickException("Project not found. Aborting")
 
     # remove meta data
-    project_api.delete(project["uid"])
+    project.delete()
 
     # remove the directory and all files
     dst = os.path.join(DROPBOX, name)

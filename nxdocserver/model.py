@@ -10,15 +10,45 @@ class TypedResource(object):
         self.data = data
 
     def __getitem__(self, key):
-        if not key in self.data.keys():
-            raise KeyError(key)
         return self.data[key]
+
+    def __setitem__(self, key, value):
+        return self.data.__setitem__(key, value)
+
+    def update(self, data):
+        return self.data.update(data)
+
+    def delete(self):
+        return self.__class__.api.delete(self["uid"])
 
 class Folder(TypedResource):
     type = "folders"
 
 class Docmeta(TypedResource):
     type = "docmetas"
+
+    def save(self):
+        if "uid" in self.data.keys():
+            Docmeta.api.update(self["uid"], title=self["title"], version=self["version"], doc_icon=self["doc_icon"])
+            return
+
+        parent = Project.api.find("id", self.data["parent_id"])
+        if not parent:
+            raise click.ClickException("Parent project not found. Aborting")
+
+        # Check for duplicates
+        for doc in parent:
+            if doc["title"] == title and doc["version"] == version:
+                raise click.ClickException("Documentation already exists. Aborting")
+
+        # create meta data
+        data = Docmeta.api.create(parent["uid"], title=self["title"], version=self["version"])
+
+        if self["icon"]:
+            # add the icon to the docmeta
+            data = Docmeta.api.update(data["uid"], doc_icon=os.path.join(self["parent"], data["id"], "icon.png"))
+
+        self.data = data
 
 class Project(TypedResource):
     type = "projects"
@@ -32,6 +62,28 @@ class Project(TypedResource):
                 return True
         raise KeyError(title)
 
+    def save(self):
+        if "uid" in self.data.keys():
+            Project.api.update(self["uid"], title=self["title"], github=self["github"])
+            return
+
+        # Check for duplicates
+        if Project.api.find("title", self["title"]):
+            raise click.ClickException("A Project with this title already exists")
+
+        if self["parent_id"]:
+            # nested project
+            parent = Project.api.find("id", self["parent_id"])
+        else:
+            # add to documentation folder as default
+            parent = Folder.api.find("title", "Documentation")
+
+        if not parent:
+            raise click.ClickException("Parent not found. Aborting")
+
+        # create meta data
+        self.data = Project.api.create(parent["uid"], title=self["title"], github=self["github"])
+
     def getByUid(self, uid):
         for item in self:
             if item["uid"] == uid:
@@ -39,10 +91,9 @@ class Project(TypedResource):
         raise KeyError(uid)
 
     def getById(self, name):
-        """ Return a docmeta or throw a click.ClickException
+        """ Return a docmeta or None
         """
         docs = filter(lambda item: item["id"] == name, self)
-        if not docs:
-            raise click.ClickException("Documentation not found. Aborting")
+        if not docs: return None
 
         return Docmeta(docs[0])

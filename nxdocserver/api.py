@@ -10,6 +10,7 @@ class API(object): # <clazz extends TypedResource>
     """
     def __init__(self, clazz, base_url, api, username, password):
         self.clazz = clazz
+        clazz.api = self
         self.base_url = base_url
         self.api = api
         self.username = username
@@ -63,13 +64,13 @@ class API(object): # <clazz extends TypedResource>
         self.logger.debug("create: parent=%s, %r", parent_uid, kw)
         ret = self.post("create", parent_uid, **kw)
         self.logger.debug("created: => %r", ret)
-        return self.clazz(ret["items"][0])
+        return ret["items"][0]
 
     def update(self, uid, **kw):
         self.logger.debug("update: uid=%s, %r", uid, kw)
         ret = self.post("update", uid, **kw)
         self.logger.debug("updated: => %r", ret)
-        return self.clazz(ret["items"][0])
+        return ret["items"][0]
 
     def delete(self, uid):
         self.logger.debug("delete: uid=%s", uid)
@@ -91,3 +92,8 @@ class ProjectAPI(API): # extends API<Project>
 
     def __init__(self, base_url, username, password):
         super(self.__class__, self).__init__(Project, base_url, "docs", username, password)
+
+    def find_docmeta(self, project, name):
+        p = self.find("id", project)
+        if not p: return None
+        return p.getById(name)
