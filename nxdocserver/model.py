@@ -71,7 +71,7 @@ class Project(TypedResource):
         if Project.api.find("title", self["title"]):
             raise click.ClickException("A Project with this title already exists")
 
-        if self["parent_id"]:
+        if "parent_id" in self.data.keys() and self["parent_id"]:
             # nested project
             parent = Project.api.find("id", self["parent_id"])
         else:

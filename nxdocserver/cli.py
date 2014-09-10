@@ -4,16 +4,23 @@ import ConfigParser
 from api import *
 from fabric.api import task
 
+logger = logging.getLogger("cli")
+
 config = ConfigParser.ConfigParser()
 config.read(os.path.expanduser("~/.nxdocserver"))
-DOCSERVER_URL = config.get("Docserver", "url")
-DROPBOX = config.get("Docserver", "dropbox")
-username = config.get("Login", "user")
-password = config.get("Login", "password")
 
-folder_api = FolderAPI(DOCSERVER_URL, username, password)
-doc_api  = DocmetaAPI(DOCSERVER_URL, username, password)
-project_api  = ProjectAPI(DOCSERVER_URL, username, password)
+try:
+    DOCSERVER_URL = config.get("Docserver", "url")
+    DROPBOX = config.get("Docserver", "dropbox")
+    username = config.get("Login", "user")
+    password = config.get("Login", "password")
+
+    folder_api = FolderAPI(DOCSERVER_URL, username, password)
+    doc_api  = DocmetaAPI(DOCSERVER_URL, username, password)
+    project_api  = ProjectAPI(DOCSERVER_URL, username, password)
+
+except ConfigParser.NoSectionError:
+     print("Error parsing config file at $HOME/.nxdocserver !")
 
 @click.group()
 @click.option("--debug", "-d", is_flag=True)
@@ -189,7 +196,7 @@ def delete_project(name):
         raise click.ClickException("Project files not found")
     shutil.rmtree(dst)
 
-@click.command()
+# @click.command()
 def test():
 
     # list all projects
@@ -201,35 +208,45 @@ def test():
     # -----------------------------
 
     # create a project
-    parent_uid = folder_api.find("title", "Documentation")["uid"]
-    p = project_api.create(parent_uid, title="Test Project", github="https://github.com/nexiles/nexiles.plone.docs")
+    p = Project({
+        "title": "Test Project",
+        "github": "https://github.com/nexiles/nexiles.plone.docs"
+    })
+
+    p.save()
 
     # update
-    p = project_api.update(p["uid"], github="http://google.de")
+    p["github"] = "http://google.de"
+    p.save()
     assert p["github"] == "http://google.de"
 
     # TEST DOCMETAS
     # -----------------------------
 
     # create a project
-    d = doc_api.create(
-        p["uid"],
-        title="Test Doc",
-        version="0.0.1",
-        doc_icon=None)
+    d = Docmeta({
+        "parent_id": p["id"],
+        "title": "Test Doc",
+        "version": "0.0.1",
+        "icon": None
+    })
+    d.save()
 
     # update
-    d = doc_api.update(d["uid"], doc_icon="foo.jpg")
+    d["doc_icon"] = "foo.jpg"
+    d.save()
     assert d["doc_icon"].endswith("foo.jpg")
 
     # CLEANUP
     # -------
 
     # delete docmeta
-    doc_api.delete(d["uid"])
+    d.delete()
 
     # delete project
-    project_api.delete(p["uid"])
+    p.delete()
+
+    print "Test completed successfully"
 
 
 cli.add_command(create_doc)
