@@ -18,12 +18,19 @@ import tasks
 def cli(debug):
     logging.basicConfig(level=(debug and logging.DEBUG) or logging.ERROR, format="%(asctime)s [%(levelname)-7s] [line %(lineno)d] %(name)s: %(message)s")
 
+@click.command()
+def version():
+    """print the version and exit."""
+    import pkg_resources
+    print(colors.green("nxdocserver {}".format(pkg_resources.get_distribution("nxdocserver").version)))
+
 ################################################################################
 # Docmeta C(R)UD commands
 ################################################################################
 
 @click.command()
 def list_docs(**kwargs):
+    """List all documentation on the server."""
     format_string = "{title:<45} {state:<15} {creator.fullname:<20} {version:<15} {visibility:<10} {modification_date}"
     for p in doc_api.list():
         print(p.format(format_string))
@@ -35,6 +42,7 @@ def list_docs(**kwargs):
 @click.option("--zip", type=click.Path(exists=True), required=True, help="Location of the zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def create_doc(**kwargs):
+    """Create a new documentation."""
     tasks.publish_doc(**kwargs)
 
 @click.command()
@@ -45,6 +53,7 @@ def create_doc(**kwargs):
 @click.option("--zip", type=click.Path(exists=True), help="Location of the new zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def update_doc(name, project, title, version, zip, icon):
+    """Update a existing documentation."""
 
     doc = project_api.find_docmeta(project, name)
 
@@ -86,6 +95,7 @@ def update_doc(name, project, title, version, zip, icon):
 @click.argument("name")
 @click.option("--project", required=True, help="ID of the parent project")
 def delete_doc(project, name):
+    """Delete documentation."""
     doc = project_api.find_docmeta(project, name)
 
     if not doc:
@@ -107,6 +117,7 @@ def delete_doc(project, name):
 
 @click.command()
 def list_projects(**kwargs):
+    """List all projects on the server."""
     print(colors.green("{title:<40} {state:<15} {creator:<20} {github}".format(title="Project Title", state="Project State", creator="Project Creator", github="GitHub URL")))
     for p in project_api.list():
         print(p.format("{title:<40} {state:<15} {creator.fullname:<20} {github}"))
@@ -116,6 +127,7 @@ def list_projects(**kwargs):
 @click.option("--title", required=True, help="Title of the project")
 @click.option("--github", help="GitHub URL of the project")
 def create_project(**kwargs):
+    """Create a new project."""
     tasks.publish_project(**kwargs)
 
 @click.command()
@@ -123,6 +135,7 @@ def create_project(**kwargs):
 @click.option("--title", help="New title of the project")
 @click.option("--github", help="New GitHub URL of the project")
 def update_project(name, **kw):
+    "Update a existing project."
     if not kw:
         raise click.ClickException("Nothing to update. Aborting")
 
@@ -136,6 +149,7 @@ def update_project(name, **kw):
 @click.command()
 @click.argument("name")
 def delete_project(name):
+    "Delete a project."
     project = project_api.find("id", name)
     if not project:
         raise click.ClickException("Project not found. Aborting")
@@ -149,7 +163,6 @@ def delete_project(name):
         raise click.ClickException("Project files not found")
     shutil.rmtree(dst)
 
-@click.command()
 def test():
 
     # list all projects
@@ -211,6 +224,7 @@ folder_api  = api.FolderAPI(DOCSERVER_URL, username, password)
 doc_api     = api.DocmetaAPI(DOCSERVER_URL, username, password)
 project_api = api.ProjectAPI(DOCSERVER_URL, username, password)
 
+cli.add_command(version)
 cli.add_command(list_docs)
 cli.add_command(create_doc)
 cli.add_command(update_doc)
@@ -219,6 +233,5 @@ cli.add_command(list_projects)
 cli.add_command(create_project)
 cli.add_command(update_project)
 cli.add_command(delete_project)
-cli.add_command(test)
 
 # vim: set ft=python ts=4 sw=4 expandtab :
