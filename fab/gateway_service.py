@@ -33,7 +33,7 @@ from version import version_string
 
 # documentation handling
 from docs import build_docs
-from docs import publish_docs
+from nxdocserver.cli import publish_docs
 from docs import package_docs
 
 # build tasks

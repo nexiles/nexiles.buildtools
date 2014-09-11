@@ -16,6 +16,11 @@ sys.path.append(os.path.expanduser("%s/fab" % os.getcwd()))
 env.version_file = os.path.abspath("%s/fabfile.py" % os.getcwd())
 env.projectname = "nexiles.buildtools"
 
-from docs import build_docs, publish_docs
+from nxfab import setup_version, setup_env
+setup_version()
+setup_env()
+
+from docs import build_docs, package_docs
+from nxdocserver.cli import publish_docs
 
 # vim: set ft=python ts=4 sw=4 expandtab :

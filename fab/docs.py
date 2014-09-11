@@ -19,21 +19,7 @@ from fabric.api import settings, hide
 from version import get_version
 from build import zip_package
 
-__all__ = ["build_docs", "publish_docs", "package_docs"]
-
-
-def publish(projectname, category="internal"):
-    HOST = "docs.nexiles.com"
-
-    dest = "/srv/docs/%(category)s/%(projectname)s" % locals()
-    dest = dest + "/%(package_version)s" % env
-
-    with nested(settings(host_string=HOST), settings(hide("stdout"))):
-        run("mkdir -p %s" % dest)
-
-        local("rsync -rlvz --del %s/_build/html/ %s:%s" % (env.docs_dir, HOST, dest))
-
-        run("cd %s && cd .. && rm -f latest && ln -s %s latest" % (dest, env.package_version))
+__all__ = ["build_docs", "package_docs"]
 
 
 def make():
@@ -57,16 +43,5 @@ def package_docs():
     """package documentation"""
     zip_package(env.doc_package, "docs/_build/html", ".")
     print green("created %(doc_package)s." % env)
-
-@task
-def publish_docs(category="internal"):
-    """ publish the documentation
-    """
-    if "projectname_docs" in env:
-        publish(env.projectname_docs, category)
-    else:
-        publish(env.projectname, category)
-
-    print green("published docs.")
 
 # vim: set ft=python ts=4 sw=4 expandtab :

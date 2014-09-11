@@ -2,7 +2,9 @@
 import logging, os, click, zipfile, shutil
 import ConfigParser
 from api import *
-from fabric.api import task
+
+from fabric.api import task, env
+from fabric.colors import green
 
 logger = logging.getLogger("cli")
 
@@ -28,14 +30,36 @@ def cli(debug):
     logging.basicConfig(level=(debug and logging.DEBUG) or logging.ERROR, format="%(asctime)s [%(levelname)-7s] [line %(lineno)d] %(name)s: %(message)s")
 
 ################################################################################
-# fabric tasks
+# fabric task
 ################################################################################
 
 @task
-def publish_doc(project, title, version, zip, icon=None):
-    """ Create meta data for the documentation and copy its files to the Dropbox
-        folder specified in $HOME/.nxdocserver
-        Before this command is run make sure the parent project exists
+def publish_docs():
+    """ create meta data for the documentation and copy its files to the Dropbox folder specified in $HOME/.nxdocserver
+    """
+
+    if "projectname_docs" in env:
+        title = env.projectname_docs
+    else:
+        title = env.projectname
+
+    project = project_api.find("title", title)
+    if not project:
+        project = publish_project(title)
+
+    if "icon" in env:
+        icon = env.icon
+    else:
+        icon = None
+
+    publish(project["id"], title, env.package_version, env.doc_package, icon)
+
+    print green("published docs.")
+
+################################################################################
+
+def publish(project, title, version, zip, icon=None):
+    """ Before this command is run make sure the parent project exists
     """
 
     doc = Docmeta({
@@ -55,7 +79,8 @@ def publish_doc(project, title, version, zip, icon=None):
     if icon:
         shutil.copyfile(icon, os.path.join(basdir, "icon.png"))
 
-@task
+    return doc
+
 def publish_project(title, github=None, project=None):
     """ Create meta data for the project and create a new directory in the Dropbox
         folder specified in $HOME/.nxdocserver
@@ -73,6 +98,8 @@ def publish_project(title, github=None, project=None):
     # create directory
     os.mkdir(os.path.join(DROPBOX, p["id"]))
 
+    return p
+
 
 ################################################################################
 # Docmeta C(R)UD commands
@@ -86,7 +113,7 @@ def publish_project(title, github=None, project=None):
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def create_doc(**kwargs):
 
-    publish_doc(**kwargs)
+    publish(**kwargs)
 
 @click.command()
 @click.argument("name")
@@ -196,7 +223,7 @@ def delete_project(name):
         raise click.ClickException("Project files not found")
     shutil.rmtree(dst)
 
-# @click.command()
+@click.command()
 def test():
 
     # list all projects
