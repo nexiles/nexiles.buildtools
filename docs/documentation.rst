@@ -75,7 +75,7 @@ You can extend your `fabfile.py` as follows::
 
     # import the documentation tasks
     from docs import build_docs, package_docs
-    from nxdocserver.cli import publish_docs
+    from nxdocserver.tasks import publish_docs
 
 
 Now you can build your documentation like this::
@@ -91,7 +91,7 @@ And distribute it to `docs.nexiles.com` like this::
     $ fab publish_docs
 
 .. _Sphinx: http://sphinx.pocoo.org/
-.. _Fabric: https://github.com/fabric/fabric
+.. _Fabric: http://docs.fabfile.org/en/latest/index.html
 .. _NxSphinx: https://github.com/nexiles/NxSphinx
 .. _nexiles.buildtools: https://github.com/nexiles/nexiles.buildtools
 .. _Bootstrap: https://pypi.python.org/pypi/sphinx-bootstrap-theme/

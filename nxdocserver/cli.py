@@ -1,28 +1,17 @@
 # -*- coding: utf-8 -*-
-import logging, os, click, zipfile, shutil
+import os
+import sys
+import click
+import zipfile
+import shutil
+import logging
 import ConfigParser
-from api import *
 
-from fabric.api import task, env
-from fabric.colors import green
+from fabric import colors
 
-logger = logging.getLogger("cli")
-
-config = ConfigParser.ConfigParser()
-config.read(os.path.expanduser("~/.nxdocserver"))
-
-try:
-    DOCSERVER_URL = config.get("Docserver", "url")
-    DROPBOX = config.get("Docserver", "dropbox")
-    username = config.get("Login", "user")
-    password = config.get("Login", "password")
-
-    folder_api = FolderAPI(DOCSERVER_URL, username, password)
-    doc_api  = DocmetaAPI(DOCSERVER_URL, username, password)
-    project_api  = ProjectAPI(DOCSERVER_URL, username, password)
-
-except ConfigParser.NoSectionError:
-     print("Error parsing config file at $HOME/.nxdocserver !")
+import api
+import conf
+import tasks
 
 @click.group()
 @click.option("--debug", "-d", is_flag=True)
@@ -30,80 +19,14 @@ def cli(debug):
     logging.basicConfig(level=(debug and logging.DEBUG) or logging.ERROR, format="%(asctime)s [%(levelname)-7s] [line %(lineno)d] %(name)s: %(message)s")
 
 ################################################################################
-# fabric task
-################################################################################
-
-@task
-def publish_docs():
-    """ create meta data for the documentation and copy its files to the Dropbox folder specified in $HOME/.nxdocserver
-    """
-
-    if "projectname_docs" in env:
-        title = env.projectname_docs
-    else:
-        title = env.projectname
-
-    project = project_api.find("title", title)
-    if not project:
-        project = publish_project(title)
-
-    if "icon" in env:
-        icon = env.icon
-    else:
-        icon = None
-
-    publish(project["id"], title, env.package_version, env.doc_package, icon)
-
-    print green("published docs.")
-
-################################################################################
-
-def publish(project, title, version, zip, icon=None):
-    """ Before this command is run make sure the parent project exists
-    """
-
-    doc = Docmeta({
-        "parent_id": project,
-        "title": title,
-        "version": version,
-        "icon": icon
-    })
-
-    doc.save()
-
-    # copy and unpack data
-    basedir = os.path.join(DROPBOX, project, doc["id"])
-    dst = os.path.join(basedir, doc["version"])
-    zipfile.ZipFile(zip).extractall(dst)
-    shutil.copyfile(zip, dst + ".zip")
-    if icon:
-        shutil.copyfile(icon, os.path.join(basdir, "icon.png"))
-
-    return doc
-
-def publish_project(title, github=None, project=None):
-    """ Create meta data for the project and create a new directory in the Dropbox
-        folder specified in $HOME/.nxdocserver
-    """
-
-    p = Project({
-        "parent_id": project,
-        "title": title,
-        "github": github or "https://github.com/nexiles/" + title
-    })
-
-    # save meta data
-    p.save()
-
-    # create directory
-    os.mkdir(os.path.join(DROPBOX, p["id"]))
-
-    return p
-
-
-################################################################################
 # Docmeta C(R)UD commands
 ################################################################################
+
+@click.command()
+def list_docs(**kwargs):
+    format_string = "{title:<45} {state:<15} {creator.fullname:<20} {version:<15} {visibility:<10} {modification_date}"
+    for p in doc_api.list():
+        print(p.format(format_string))
 
 @click.command()
 @click.option("--project", required=True, help="ID of the parent project")
@@ -112,8 +35,7 @@ def publish_project(title, github=None, project=None):
 @click.option("--zip", type=click.Path(exists=True), required=True, help="Location of the zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def create_doc(**kwargs):
-
-    publish(**kwargs)
+    tasks.publish_doc(**kwargs)
 
 @click.command()
 @click.argument("name")
@@ -152,7 +74,7 @@ def update_doc(name, project, title, version, zip, icon):
 
     if icon:
         # copy icon to same directory as before
-        shutil.copyfile(icon, os.path.join(basdir, "icon.png"))
+        shutil.copyfile(icon, os.path.join(basedir, "icon.png"))
 
     if title:
         # this will NOT update the id!
@@ -184,19 +106,23 @@ def delete_doc(project, name):
 ################################################################################
 
 @click.command()
+def list_projects(**kwargs):
+    print(colors.green("{title:<40} {state:<15} {creator:<20} {github}".format(title="Project Title", state="Project State", creator="Project Creator", github="GitHub URL")))
+    for p in project_api.list():
+        print(p.format("{title:<40} {state:<15} {creator.fullname:<20} {github}"))
+
+@click.command()
 @click.option("--project", help="ID of the parent project")
 @click.option("--title", required=True, help="Title of the project")
 @click.option("--github", help="GitHub URL of the project")
 def create_project(**kwargs):
-
-    publish_project(**kwargs)
+    tasks.publish_project(**kwargs)
 
 @click.command()
 @click.argument("name")
 @click.option("--title", help="New title of the project")
 @click.option("--github", help="New GitHub URL of the project")
 def update_project(name, **kw):
-    kw = dict((k, v) for k, v in kw.items() if v)
     if not kw:
         raise click.ClickException("Nothing to update. Aborting")
 
@@ -230,12 +156,11 @@ def test():
     for p in project_api.list():
         print p["title"] + " " + p["state"] + " " + p["github"]
 
-
     # TEST PROJECTS API
     # -----------------------------
 
     # create a project
-    p = Project({
+    p = api.Project({
         "title": "Test Project",
         "github": "https://github.com/nexiles/nexiles.plone.docs"
     })
@@ -251,7 +176,7 @@ def test():
     # -----------------------------
 
     # create a project
-    d = Docmeta({
+    d = api.Docmeta({
         "parent_id": p["id"],
         "title": "Test Doc",
         "version": "0.0.1",
@@ -275,10 +200,22 @@ def test():
 
     print "Test completed successfully"
 
+config = conf.get_configuration()
 
+DOCSERVER_URL = config.docserver_url
+DROPBOX       = config.docserver_dropbox
+username      = config.login_username
+password      = config.login_password
+
+folder_api  = api.FolderAPI(DOCSERVER_URL, username, password)
+doc_api     = api.DocmetaAPI(DOCSERVER_URL, username, password)
+project_api = api.ProjectAPI(DOCSERVER_URL, username, password)
+
+cli.add_command(list_docs)
 cli.add_command(create_doc)
 cli.add_command(update_doc)
 cli.add_command(delete_doc)
+cli.add_command(list_projects)
 cli.add_command(create_project)
 cli.add_command(update_project)
 cli.add_command(delete_project)

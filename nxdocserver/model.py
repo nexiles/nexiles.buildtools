@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging, click
+import click
+import string
+import logging
 
 class TypedResource(object):
     """ Wrapper for API results
@@ -20,6 +22,17 @@ class TypedResource(object):
 
     def delete(self):
         return self.__class__.api.delete(self["uid"])
+
+    def format(self, fmt):
+        return ResourceFormatter().format(fmt, self)
+
+class ResourceFormatter(string.Formatter):
+    def get_field(self, key, args, kwargs):
+        value = None
+        context = args[0]
+        for subkey in key.split("."):
+            context = value = context[subkey]
+        return (value, key)
 
 class Folder(TypedResource):
     type = "folders"
