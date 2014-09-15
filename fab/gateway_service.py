@@ -46,8 +46,6 @@ from deploy import deploy_eggs
 
 # dist tasks
 from dist import dist_package
-#from dist import dist_static
-#from dist import dist_templates
 from dist import dist_docs
 from dist import dist_eggs
 
@@ -152,7 +150,6 @@ def dist(version=None, customer=None):
     print "Creating dist packages for version: " + yellow(env.package_version)
 
     dist_docs()
-    publish_docs()
 
     print "dist for "
     for customer in customer_list:
@@ -186,7 +183,6 @@ def dist(version=None, customer=None):
     print "additional pkgs  : ", red(" ".join(env.get("additional_packages", [])))
     print "doc  packages    : ", red(env.doc_package)
     print "dist dir         : ", red(env.dist_dir)
-
 
 
 # vim: set ft=python ts=4 sw=4 tw=80 expandtab :
