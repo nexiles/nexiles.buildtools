@@ -21,6 +21,6 @@ setup_version()
 setup_env()
 
 from docs import build_docs, package_docs
-from nxdocserver.cli import publish_docs
+from nxdocserver.tasks import publish_docs
 
 # vim: set ft=python ts=4 sw=4 expandtab :

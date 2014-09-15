@@ -16,17 +16,42 @@ import zipfile
 import shutil
 import logging
 
-from fabric.api import task
+from fabric.api import task, env
+from fabric import colors
 
 import conf
 import api
+import cli
 
 @task
-def publish_doc(project, title, version, zip, icon=None):
-    """ Create meta data for the documentation and copy its files to the Dropbox
-        folder specified in $HOME/.nxdocserver
-        Before this command is run make sure the parent project exists
+def publish_docs():
+    """ create meta data for the documentation and copy its files to the Dropbox folder specified in $HOME/.nxdocserver
     """
+
+    if "projectname_docs" in env:
+        title = env.projectname_docs
+    else:
+        title = env.projectname
+
+    project = cli.project_api.find("title", title)
+    if not project:
+        project = publish_project(title)
+
+    if "icon" in env:
+        icon = env.icon
+    else:
+        icon = None
+
+    publish(project["id"], title, env.package_version, env.doc_package, icon)
+
+    print colors.green("published docs.")
+
+################################################################################
+
+def publish(project, title, version, zip, icon=None):
+    """ Before this command is run make sure the parent project exists
+    """
+
     config = conf.get_configuration()
 
     doc = api.Docmeta({
@@ -46,11 +71,13 @@ def publish_doc(project, title, version, zip, icon=None):
     if icon:
         shutil.copyfile(icon, os.path.join(basedir, "icon.png"))
 
-@task
+    return doc
+
 def publish_project(title, github=None, project=None):
     """ Create meta data for the project and create a new directory in the Dropbox
         folder specified in $HOME/.nxdocserver
     """
+
     config = conf.get_configuration()
 
     p = api.Project({
@@ -64,6 +91,8 @@ def publish_project(title, github=None, project=None):
 
     # create directory
     os.mkdir(os.path.join(config.docserver_dropbox, p["id"]))
+
+    return p
 
 
 # vim: set ft=python ts=4 sw=4 expandtab :

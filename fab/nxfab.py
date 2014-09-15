@@ -79,7 +79,7 @@ def setup_env():
     env.build_dir     = os.path.abspath("build")
     env.docs_dir     = os.path.abspath("docs")
     env.dist_dir      = os.path.join(env.dropbox, "dist", env.projectname, "%(projectname)s-%(package_version)s" % env)
-    env.doc_package       = os.path.join(env.build_dir, versioned_file("doc"))
+    env.doc_package       = os.path.join(env.build_dir, versioned_file("doc", "zip"))
     env.templates_package = os.path.join(env.build_dir, versioned_file("templates", "zip"))
     env.static_package    = os.path.join(env.build_dir, versioned_file("static", "zip"))
 

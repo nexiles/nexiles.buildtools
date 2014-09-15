@@ -10,13 +10,16 @@ import ConfigParser
 from fabric import colors
 
 import api
+import log
 import conf
 import tasks
+
+logger = log.logger
 
 @click.group()
 @click.option("--debug", "-d", is_flag=True)
 def cli(debug):
-    logging.basicConfig(level=(debug and logging.DEBUG) or logging.ERROR, format="%(asctime)s [%(levelname)-7s] [line %(lineno)d] %(name)s: %(message)s")
+    log.setup_logging(level=debug and logging.DEBUG or logging.ERROR)
 
 @click.command()
 def version():
@@ -43,7 +46,7 @@ def list_docs(**kwargs):
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def create_doc(**kwargs):
     """Create a new documentation."""
-    tasks.publish_doc(**kwargs)
+    tasks.publish_docs(**kwargs)
 
 @click.command()
 @click.argument("name")
@@ -52,8 +55,9 @@ def create_doc(**kwargs):
 @click.option("--version", help="New version of the documentation")
 @click.option("--zip", type=click.Path(exists=True), help="Location of the new zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
-def update_doc(name, project, title, version, zip, icon):
+def update_doc(name, project, title, version, zip_path, icon):
     """Update a existing documentation."""
+    logger.debug("update_doc: %s %s %s %s %s %s", name, project, title, version, zip_path, icon)
 
     doc = project_api.find_docmeta(project, name)
 
@@ -76,10 +80,10 @@ def update_doc(name, project, title, version, zip, icon):
 
     dst = os.path.join(basedir, doc["version"])
 
-    if zip:
+    if zip_path:
         # copy and extract new file
-        zipfile.ZipFile(zip).extractall(dst)
-        shutil.copyfile(zip, dst + ".zip")
+        zipfile.ZipFile(zip_path).extractall(dst)
+        shutil.copyfile(zip_path, dst + ".zip")
 
     if icon:
         # copy icon to same directory as before
