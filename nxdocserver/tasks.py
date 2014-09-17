@@ -80,17 +80,11 @@ def update_docs():
 
 ################################################################################
 
-def save_project_id(project):
-    # converts a dotted project name to a plone id
-    return project.replace(".", "-").lower()
-
-################################################################################
-
 def publish_doc(project, title, version, zip, icon=None):
     """ Before this command is run make sure the parent project exists
     """
     doc = api.Docmeta({
-        "parent_id": save_project_id(project),
+        "parent_id": project,
         "title": title,
         "version": version,
         "icon": icon
@@ -123,7 +117,7 @@ def publish_project(title, github=None, project=None):
     config = conf.get_configuration()
 
     p = api.Project({
-        "parent_id": save_project_id(project),
+        "parent_id": project,
         "title": title,
         "github": github or "https://github.com/nexiles/" + title
     })
