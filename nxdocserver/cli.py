@@ -46,7 +46,7 @@ def list_docs(**kwargs):
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
 def create_doc(**kwargs):
     """Create a new documentation."""
-    tasks.publish_docs(**kwargs)
+    tasks.publish_doc(**kwargs)
 
 @click.command()
 @click.argument("name")

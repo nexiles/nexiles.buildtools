@@ -12,9 +12,7 @@ __version__   = '$Revision: $'[11:-2]
 
 import os
 import sys
-import zipfile
 import shutil
-import logging
 
 from fabric import colors
 from fabric.api import task, env
@@ -80,6 +78,11 @@ def update_docs():
 
     copy_files(project["id"], doc, env.doc_package, icon)
 
+################################################################################
+
+def save_project_id(project):
+    # converts a dotted project name to a plone id
+    return project.replace(".", "-").lower()
 
 ################################################################################
 
@@ -87,7 +90,7 @@ def publish_doc(project, title, version, zip, icon=None):
     """ Before this command is run make sure the parent project exists
     """
     doc = api.Docmeta({
-        "parent_id": project,
+        "parent_id": save_project_id(project),
         "title": title,
         "version": version,
         "icon": icon
@@ -120,7 +123,7 @@ def publish_project(title, github=None, project=None):
     config = conf.get_configuration()
 
     p = api.Project({
-        "parent_id": project,
+        "parent_id": save_project_id(project),
         "title": title,
         "github": github or "https://github.com/nexiles/" + title
     })
