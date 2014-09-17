@@ -55,9 +55,9 @@ def create_doc(**kwargs):
 @click.option("--version", help="New version of the documentation")
 @click.option("--zip", type=click.Path(exists=True), help="Location of the new zip file")
 @click.option("--icon", type=click.Path(exists=True), help="Location of the icon file")
-def update_doc(name, project, title, version, zip_path, icon):
+def update_doc(name, project, title, version, zip, icon):
     """Update a existing documentation."""
-    logger.debug("update_doc: %s %s %s %s %s %s", name, project, title, version, zip_path, icon)
+    logger.debug("update_doc: %s %s %s %s %s %s", name, project, title, version, zip, icon)
 
     doc = project_api.find_docmeta(project, name)
 
@@ -80,10 +80,10 @@ def update_doc(name, project, title, version, zip_path, icon):
 
     dst = os.path.join(basedir, doc["version"])
 
-    if zip_path:
+    if zip:
         # copy and extract new file
-        zipfile.ZipFile(zip_path).extractall(dst)
-        shutil.copyfile(zip_path, dst + ".zip")
+        zipfile.ZipFile(zip).extractall(dst)
+        shutil.copyfile(zip, dst + ".zip")
 
     if icon:
         # copy icon to same directory as before

@@ -95,5 +95,14 @@ class ProjectAPI(API): # extends API<Project>
 
     def find_docmeta(self, project, name):
         p = self.find("id", project)
-        if not p: return None
+        if not p:
+            return None
         return p.getById(name)
+
+    def find_doc_by_version(self, project, version):
+        p = self.find("id", project)
+        if not p:
+            return None
+        for doc in p.data["docs"]:
+            if doc["version"] == version:
+                return doc
