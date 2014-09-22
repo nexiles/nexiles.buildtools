@@ -45,6 +45,9 @@ class Docmeta(TypedResource):
             Docmeta.api.update(self["uid"], title=self["title"], version=self["version"], doc_icon=self["doc_icon"])
             return
 
+        version = self["version"]
+        title = self["title"]
+
         parent = Project.api.find("id", self.data["parent_id"])
         if not parent:
             raise click.ClickException("Parent project not found. Aborting")
