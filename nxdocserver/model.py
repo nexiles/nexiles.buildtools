@@ -110,6 +110,7 @@ class Project(TypedResource):
         """ Return a docmeta or None
         """
         docs = filter(lambda item: item["id"] == name, self)
-        if not docs: return None
+        if not docs:
+            return None
 
         return Docmeta(docs[0])
