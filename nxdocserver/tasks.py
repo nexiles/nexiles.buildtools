@@ -101,8 +101,8 @@ def copy_files(project, doc, doc_package, icon=None):
     # copy and unpack data
     basedir = os.path.join(config.docserver_dropbox, project, doc["id"])
     dst = os.path.join(basedir, doc["version"])
-    local("cp {} {}.zip".format(doc_package, dst))
     local("mkdir -p {}".format(dst))
+    local("cp {} {}.zip".format(doc_package, dst))
     with lcd(dst):
         local("unzip {}".format(doc_package))
     if icon:

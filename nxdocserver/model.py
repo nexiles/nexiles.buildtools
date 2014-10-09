@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+import os
 import click
 import string
 import logging
@@ -45,6 +47,11 @@ class Docmeta(TypedResource):
             Docmeta.api.update(self["uid"], title=self["title"], version=self["version"], doc_icon=self["doc_icon"])
             return
 
+        version = self["version"]
+        title = self["title"]
+
+        versioned_title = "%s-%s" % (title, version)
+
         parent = Project.api.find("id", self.data["parent_id"])
         if not parent:
             raise click.ClickException("Parent project not found. Aborting")
@@ -55,7 +62,7 @@ class Docmeta(TypedResource):
                 raise click.ClickException("Documentation already exists. Aborting")
 
         # create meta data
-        data = Docmeta.api.create(parent["uid"], title=self["title"], version=self["version"])
+        data = Docmeta.api.create(parent["uid"], title=versioned_title, version=self["version"])
 
         if self["icon"]:
             # add the icon to the docmeta
@@ -107,6 +114,7 @@ class Project(TypedResource):
         """ Return a docmeta or None
         """
         docs = filter(lambda item: item["id"] == name, self)
-        if not docs: return None
+        if not docs:
+            return None
 
         return Docmeta(docs[0])

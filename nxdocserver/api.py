@@ -100,7 +100,7 @@ class ProjectAPI(API): # extends API<Project>
         return p.getById(name)
 
     def find_doc_by_version(self, project, version):
-        p = self.find("id", project)
+        p = self.find("title", project)
         if not p:
             return None
         for doc in p.data["docs"]:
