@@ -50,6 +50,8 @@ class Docmeta(TypedResource):
         version = self["version"]
         title = self["title"]
 
+        versioned_title = "%s-%s" % (title, version)
+
         parent = Project.api.find("id", self.data["parent_id"])
         if not parent:
             raise click.ClickException("Parent project not found. Aborting")
@@ -60,7 +62,7 @@ class Docmeta(TypedResource):
                 raise click.ClickException("Documentation already exists. Aborting")
 
         # create meta data
-        data = Docmeta.api.create(parent["uid"], title=self["title"], version=self["version"])
+        data = Docmeta.api.create(parent["uid"], title=versioned_title, version=self["version"])
 
         if self["icon"]:
             # add the icon to the docmeta
