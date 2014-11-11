@@ -1,2 +1,5 @@
 docs/_build
 *.pyc
+build/
+dist/
+nxdocserver.egg-info/
