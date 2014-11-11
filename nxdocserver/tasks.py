@@ -104,7 +104,7 @@ def copy_files(project, doc, doc_package, icon=None):
     local("mkdir -p {}".format(dst))
     local("cp {} {}.zip".format(doc_package, dst))
     with lcd(dst):
-        local("unzip {}".format(doc_package))
+        local("unzip {}".format(basedir+"/"+doc["version"]+".zip"))
     if icon:
         shutil.copyfile(icon, os.path.join(basedir, "icon.png"))
         local("cp {} {}/icon.png".format(icon, basedir))
