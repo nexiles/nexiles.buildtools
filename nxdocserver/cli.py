@@ -36,7 +36,8 @@ def list_docs(**kwargs):
     """List all documentation on the server."""
     format_string = "{title:<45} {state:<15} {creator.fullname:<20} {version:<15} {visibility:<10} {modification_date}"
     for p in doc_api.list():
-        print(p.format(format_string))
+        text = p.format(format_string)
+        print(text.encode('utf-8'))
 
 @click.command()
 @click.option("--project", required=True, help="ID of the parent project")
@@ -124,7 +125,8 @@ def list_projects(**kwargs):
     """List all projects on the server."""
     print(colors.green("{title:<40} {state:<15} {creator:<20} {github}".format(title="Project Title", state="Project State", creator="Project Creator", github="GitHub URL")))
     for p in project_api.list():
-        print(p.format("{title:<40} {state:<15} {creator.fullname:<20} {github}"))
+        text = p.format("{title:<40} {state:<15} {creator.fullname:<20} {github}")
+        print(text.encode('utf-8'))
 
 @click.command()
 @click.option("--project", help="ID of the parent project")
