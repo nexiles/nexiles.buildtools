@@ -47,4 +47,18 @@ named `.nxdocserver` and match the following schema::
 .. caution:: Without this file or when options are missing in the file the script
              will fail with an Error.
 
+
+Installation
+============
+
+
+
+Command line usage
+==================
+
+
+
+Examples
+========
+
 .. vim: set ft=rst ts=4 sw=4 expandtab tw=78 :
