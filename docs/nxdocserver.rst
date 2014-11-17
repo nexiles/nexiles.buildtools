@@ -55,6 +55,8 @@ Installation
 ============
 
 
+foo
+
 $ cd $project
 $ mkvirtualenv -a $(pwd) -r requirements.txt nexiles.buildtools
 $ python setup.py install   
