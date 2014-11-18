@@ -30,14 +30,16 @@ The following commands can be used::
     update_project
 
 For every command there is the detail for the documentation as well as for the
-project. ::
+project. 
+
+::
 
 create_doc and create_project: These commands create a new documentation or a new project.
 
 delete_doc and elete_project: These commands delete a documentation or a project.
-
+    
 list_docs and list_projects: These commands list all documentation or all projects on the server.
-
+    
 update_doc and update_project: These commands update a existing documentation or a exisiting project.
 
 To receive more information on how to use the commands execute them with the
