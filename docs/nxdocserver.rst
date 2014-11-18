@@ -32,6 +32,12 @@ The following commands can be used::
 For every command there is the detail for the documentation as well as for the
 project. 
 
+============================    ===========================    ==========================    ============================
+create_doc & create_project     delete_doc & delete_project     list_docs & list_projects     update_doc & update_project
+============================    ===========================    ==========================    ============================
+create a new documentation or a new project.    delete a documentation or a project.    list all documentation or all projects on the server.    update a existing documentation or a exisiting project. 
+============================================    ====================================    =====================================================    ========================================================
+
 **create_doc** and **create_project**: These commands create a new documentation or a new project.
 **delete_doc** and **elete_project**: These commands delete a documentation or a project.
 **list_docs** and **list_projects**: These commands list all documentation or all projects on the server.
