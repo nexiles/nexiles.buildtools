@@ -41,7 +41,9 @@ project.
 
 
 To receive more information on how to use the commands execute them with the
---help flag. For example::
+--help flag. 
+
+For example::
 
     nxdocserver create_doc --help
 
