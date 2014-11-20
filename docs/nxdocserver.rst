@@ -100,7 +100,6 @@ nxdocserver. When you want to use one of these commands, you have to say
 in Terminal:
 
 **nxdocserver create_project**. Some textwhich explains this here
-
 Example::
 
     $ nxdocserver create_project --title test
@@ -108,7 +107,6 @@ Example::
 
 **nxdocserver create_doc**. This is a command to create a new documentation.
 And when you want to see more informations or options about this command.
-
 Example::
 
     $ nxdocserver create_doc --project test --title foo --zip foo.zip                                                                        
@@ -120,7 +118,6 @@ Example::
 
 
 **nxdocserver update_doc** update a existing documentation, you have to say
-
 Example::
 
   $ nxdocserver update_doc foo-0-1.0 --project test
@@ -128,7 +125,6 @@ nxdocserver update_doc has no output.
 
 
 **nxdocserver update_project** update a existing documentation, you have to say
-
 Example ::
 
   $ nxdocserver update_project test
@@ -136,7 +132,6 @@ nxdocserver update_project has no output.
 
 
 **nxdocserver list_docs** list all documentation on the server.
-
 Example ::
 
   $ nxdocserver list_docs
@@ -182,7 +177,6 @@ Example ::
 
 
 **nxdocserver list_projects** list all projects on the server.
-
 Example ::
 
   $ nxdocserver list_projects
@@ -210,14 +204,12 @@ Example ::
 
 
 **nxdocserver delete_doc** delete documentation, you have to say
-
 Example ::
 
   $ nxdocserver delete_doc foo-0-1.0 --project test
 nxdocserver delete_doc has no output.
 
 **nxdocserver delete_project** delete documentation, you have to say
-
 Example ::
 
   $ nxdocserver delete_project test
