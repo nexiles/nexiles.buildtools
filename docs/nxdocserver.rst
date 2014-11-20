@@ -125,6 +125,8 @@ Example::
 
   $ nxdocserver update_doc foo-0-1.0 --project test
 nxdocserver update_doc has no output.
+foo-0-1.0 is replaced by the title attribute in plone.
+
 
 
 **nxdocserver update_project** update a existing documentation, you have to say
@@ -215,6 +217,7 @@ Example ::
 
   $ nxdocserver delete_doc foo-0-1.0 --project test
 nxdocserver delete_doc has no output.
+foo-0-1.0 is replaced by the title attribute in plone.
 
 **nxdocserver delete_project** delete documentation, you have to say
 
