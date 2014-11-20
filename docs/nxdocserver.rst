@@ -218,8 +218,8 @@ Example::
 
 
 **nxdocserver delete_doc** delete documentation.
- | nxdocserver delete_doc has no output.
- | foo-0-1.0 is replaced by the title attribute in plone.
+nxdocserver delete_doc has no output.
+foo-0-1.0 is replaced by the title attribute in plone.
 
 Example::
 
@@ -227,7 +227,7 @@ Example::
 
 
 **nxdocserver delete_project** delete documentation.
- | nxdocserver delete_project has no output.
+nxdocserver delete_project has no output.
 
 Example::
 
@@ -243,6 +243,5 @@ you create a documentation. In this documentation, you write all the
 informations about the project. Then you create another documentation.
 If there are any changes, you need to update the documentation, so that it is up-to-stand.
 Sometime the documentation and the whole project will be deleted.
-
 
 .. vim: set ft=rst ts=4 sw=4 expandtab tw=78 :
