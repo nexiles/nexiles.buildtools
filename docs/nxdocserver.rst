@@ -83,9 +83,16 @@ As mentioned above, there are several commands that can be applied to the
 nxdocserver. When you want to use one of these commands, you have to say
 in Terminal:
 
+**nxdocserver create_project**. Some textwhich explains this here
+
+Example:
+
+    $ nxdocserver create_project --title test
+    [localhost] local: mkdir -p /Users/jwycislok/develop/Trash/FakeBox/test
+
 **nxdocserver create_doc**. This is a command to create a new documentation.
-And when you want to see more informations or options about this command
-you can say:
+And when you want to see more informations or options about this command.
+
 
 **nxdocserver create_doc --help** and this will show the Options
 that are required and the Options which are not.
