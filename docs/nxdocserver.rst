@@ -41,12 +41,18 @@ project.
 
 
 To receive more information on how to use the commands execute them with the
---help flag. 
+--help flag. ::
 
-For example::
+  $ nxdocserver create_doc --help
+  $ nxdocserver create_project --help
+  $ nxdocserver update_doc --help
+  $ nxdocserver update_project --help
+  $ nxdocserver list_docs --help
+  $ nxdocserver list_projects --help
+  $ nxdocserver delete_doc --help
+  $ nxdocserver delete_project --help
 
-    nxdocserver create_doc --help
-
+  
 Configuration
 =============
 
