@@ -85,7 +85,7 @@ in Terminal:
 
 **nxdocserver create_project**. Some textwhich explains this here
 
-Example:
+Example::
 
     $ nxdocserver create_project --title test
     [localhost] local: mkdir -p /Users/jwycislok/develop/Trash/FakeBox/test
