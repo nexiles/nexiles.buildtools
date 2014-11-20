@@ -93,6 +93,14 @@ Example::
 **nxdocserver create_doc**. This is a command to create a new documentation.
 And when you want to see more informations or options about this command.
 
+Example::
+
+    $ nxdocserver create_doc --project test --title foo --zip foo.zip                                                                        
+    [localhost] local: mkdir -p /Users/jwycislok/develop/Trash/FakeBox/test/foo-0-1.0/0.1.0
+    [localhost] local: cp foo.zip /Users/jwycislok/develop/Trash/FakeBox/test/foo-0-1.0/0.1.0.zip
+    [localhost] local: unzip /Users/jwycislok/develop/Trash/FakeBox/test/foo-0-1.0/0.1.0.zip
+    Archive:  /Users/jwycislok/develop/Trash/FakeBox/test/foo-0-1.0/0.1.0.zip
+     extracting: index.html
 
 **nxdocserver create_doc --help** and this will show the Options
 that are required and the Options which are not.
