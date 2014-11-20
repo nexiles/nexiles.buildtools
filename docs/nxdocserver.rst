@@ -52,7 +52,7 @@ To receive more information on how to use the commands execute them with the
   $ nxdocserver delete_doc --help
   $ nxdocserver delete_project --help
 
-  
+
 Configuration
 =============
 
@@ -125,7 +125,7 @@ Example::
      extracting: index.html
 
 
-**nxdocserver update_doc** update a existing documentation, you have to say
+**nxdocserver update_doc** update a existing documentation.
 
 nxdocserver update_doc has no output.
 
@@ -135,7 +135,7 @@ Example::
 
   $ nxdocserver update_doc foo-0-1.0 --project test
 
-**nxdocserver update_project** update a existing documentation, you have to say
+**nxdocserver update_project** update a existing documentation.
 
 Example ::
 
@@ -217,7 +217,7 @@ Example ::
   test                                     private         Jan Börner           https://github.com/nexiles/test
 
 
-**nxdocserver delete_doc** delete documentation, you have to say
+**nxdocserver delete_doc** delete documentation.
 
 nxdocserver delete_doc has no output.
 
@@ -228,9 +228,8 @@ Example ::
   $ nxdocserver delete_doc foo-0-1.0 --project test
 
 
-**nxdocserver delete_project** delete documentation, you have to say
-
-nxdocserver delete_project has no output.
+**nxdocserver delete_project** delete documentation.
+| nxdocserver delete_project has no output.
 
 Example ::
 
