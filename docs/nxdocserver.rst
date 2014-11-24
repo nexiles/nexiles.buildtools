@@ -237,11 +237,44 @@ Example::
 
 Examples
 ========
-*This is an Example of a whole life cycle of a documentation*:
-The first thing what you have to do is to beginn a project. For this project
-you create a documentation. In this documentation, you write all the
-informations about the project. Then you create another documentation.
-If there are any changes, you need to update the documentation, so that it is up-to-stand.
-Sometime the documentation and the whole project will be deleted.
+project, create a documentation, create another documentation, update the documentation, documentation and the whole project will be deleted.
+
+
+To see how it works, we create a little project. 
+First we have to create our new project and give it a name. Our project has the name "Example"
+::
+
+  $ nxdocserver create_project --title Example
+
+After we create the project "Example" we have to write a documentation about it. So we have to create a 
+documentation.
+::
+
+  $ nxdocserver create_doc --project Example --title foo --zip foo.zip
+
+Maybe we need more documentation for this project, so we have to do the same as above.
+
+Now we should update the documentation because a lot has changed in the documentation and that we are up-to-date
+we must do:
+::
+
+  $ nxdocserver update_doc foo-0-1.0 --project Example
+
+Because the documentation has changed, the whole project should be up to date, we also update the entire project.
+::
+
+  $ nxdocserver update_project Example
+
+Sometime the project is finished and we don´t need the documentations, we will delete the documentations
+::
+
+  $ nxdocserver delete_doc foo.0-1.0 --project Example
+
+We don´t need a project Without some documentations or contents, so now we can delete the whole project.
+::
+
+  $ nxdocserver delete_project Example
+
+Now the whole project no longer exist.
 
 .. vim: set ft=rst ts=4 sw=4 expandtab tw=78 :
