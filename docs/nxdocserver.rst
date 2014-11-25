@@ -244,7 +244,7 @@ First we have to create our new project and give it a name. Our project has the 
 
   $ nxdocserver create_project --title Example
 
-After we create the project "Example" we have to write a documentation about it. So we have to create a 
+After we created the project "Example" we have to write a documentation about it. So we have to create a 
 documentation.
 ::
 
