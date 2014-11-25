@@ -237,8 +237,6 @@ Example::
 
 Examples
 ========
-project, create a documentation, create another documentation, update the documentation, documentation and the whole project will be deleted.
-
 
 To see how it works, we create a little project. 
 First we have to create our new project and give it a name. Our project has the name "Example"
