@@ -15,6 +15,9 @@ Introduction
 This script allows you to manage documentation meta data and files via a
 commandline interface.
 
+.. caution:: Please note that you should use only small letters, otherwise the backend of
+             the doc server get's confused.
+
 Commands
 ========
 
@@ -81,8 +84,6 @@ $ mkvirtualenv -a $(pwd) -r requirements.txt nexiles.buildtools
 $ python setup.py install
 
 
-
-
 Command line usage
 ==================
 
@@ -105,7 +106,7 @@ As mentioned above, there are several commands that can be applied to the
 nxdocserver. When you want to use one of these commands, you have to say
 in Terminal:
 
-**nxdocserver create_project**. Some textwhich explains this here
+**nxdocserver create_project**.
 
 Example::
 
@@ -140,6 +141,7 @@ Example::
 Example::
 
   $ nxdocserver update_project test
+
 nxdocserver update_project has no output.
 
 
@@ -154,39 +156,8 @@ Example::
   nexiles|gateway attributeservice (0.1dev)     private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
   nexiles|gateway attributeservice (0.2dev)     draft           Stefan Eletzhofer    0.2dev          external   Aug 14, 2014 02:19 PM
   nexiles|gateway collectorservice (0.1)        released        Stefan Eletzhofer    0.1             external   Aug 14, 2014 02:31 PM
-  nexiles|gateway collectorservice (0.1dev)     private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
-  nexiles|gateway fileservice (0.1)             released        Stefan Eletzhofer    0.1             external   Aug 14, 2014 02:31 PM
-  nexiles|gateway fileservice (0.1dev)          private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
-  nexiles|gateway fileservice (0.2dev)          draft           Stefan Eletzhofer    0.2dev          external   Aug 14, 2014 02:29 PM
-  nexiles|gateway numberservice (0.1)           private         Stefan Eletzhofer    0.1             private    Aug 14, 2014 02:19 PM
-  nexiles|gateway numberservice (0.1dev)        private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
-  nexiles|gateway numberservice (0.2)           released        Stefan Eletzhofer    0.2             external   Aug 14, 2014 02:29 PM
-  nexiles|gateway numberservice (0.2dev)        private         Stefan Eletzhofer    0.2dev          private    Aug 14, 2014 02:19 PM
-  nexiles|gateway numberservice (0.3dev)        draft           Stefan Eletzhofer    0.3dev          external   Aug 14, 2014 02:29 PM
-  nexiles|gateway principalservice (0.1)        draft           Stefan Eletzhofer    0.1             external   Aug 14, 2014 02:29 PM
-  nexiles|gateway principalservice (0.1dev)     private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
-  nexiles|gateway query (0.1) service           private         Stefan Eletzhofer    0.1             private    Aug 14, 2014 02:19 PM
-  nexiles|gateway query (0.1dev) service        private         Stefan Eletzhofer    0.1dev          private    Oct 14, 2014 10:50 AM
-  nexiles|gateway query (0.2) service           released        Stefan Eletzhofer    0.2             external   Aug 14, 2014 02:28 PM
-  nexiles|gateway query (0.2dev) service        private         Stefan Eletzhofer    0.2dev          private    Oct 14, 2014 10:50 AM
-  nexiles|gateway reportservice (0.1)           released        Stefan Eletzhofer    0.1             external   Aug 14, 2014 02:29 PM
-  nexiles|gateway reportservice (0.1dev)        private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
-  nexiles|gateway reportservice (0.2dev)        draft           Stefan Eletzhofer    0.2dev          external   Aug 14, 2014 02:28 PM
-  nexiles|gateway zipservice (0.1)              released        Stefan Eletzhofer    0.1             external   Aug 14, 2014 02:28 PM
-  nexiles|gateway zipservice (0.1dev)           private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 02:19 PM
-  Gateway Installation Manual                   draft           Stefan Eletzhofer    1.4.7           internal   Oct 14, 2014 05:17 PM
-  nexiles.buildtools                            draft           Stefan Eletzhofer    0.1             internal   Sep 11, 2014 01:52 PM
-  siemens.tdsm                                  draft           Stefan Eletzhofer    0.1.0           internal   Sep 29, 2014 05:03 PM
-  frenco.baselines                              private         Stefan Eletzhofer    0.1.0           private    Sep 16, 2014 11:32 AM
-  siemens.saveas                                private         Ramon Bartl          0.1.0           private    Sep 17, 2014 01:16 PM
-  macgregor.drawinglist                         draft           Stefan Eletzhofer    0.1.4           internal   Sep 22, 2014 06:20 PM
-  macgregor                                     draft           Stefan Eletzhofer    0.1.0           internal   Sep 22, 2014 06:47 PM
-  macgregor.drawinglist-0.1.5                   draft           Ramon Bartl          0.1.5           internal   Oct 09, 2014 03:51 PM
-  cargotec.erp-0.4.5                            private         Ramon Bartl          0.4.5           private    Oct 09, 2014 04:07 PM
-  nexiles|gateway query (0.3dev) service        draft           Stefan Eletzhofer    0.3dev          internal   Oct 14, 2014 10:50 AM
-  nexiles gateway (1.4.7rc3) docs               draft           Sven Schmid          1.4.7           internal   Oct 14, 2014 05:18 PM
-  hurz-0.1.0                                    private         Jan Börner           0.1.0           private    Nov 17, 2014 09:52 AM
-  foo-0.1.0                                     private         Jan Börner           0.1.0           private    Nov 20, 2014 09:36 AM
+  nexiles|gateway collectorservice (0.1dev)     private         Stefan Eletzhofer    0.1dev          private    Aug 14, 2014 
+  .............
 
 
 **nxdocserver list_projects** list all projects on the server.
@@ -199,22 +170,8 @@ Example::
   Nexiles Gateway                          draft           None                 https://github.com/nexiles/nexiles.tools
   nexiles.gateway.attributeservice         released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.attributeservice
   nexiles.gateway.collectorservice         released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.collectorservice
-  nexiles.gateway.fileservice              released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.fileservice
-  nexiles.gateway.numberservice            released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.numberservice
-  nexiles.gateway.principalservice         released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.principalservice
-  nexiles.gateway.query                    released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.query
-  nexiles.gateway.reportservice            released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.reportservice
-  nexiles.gateway.zipservice               released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.zipservice
-  nexiles.buildtools                       draft           Stefan Eletzhofer    https://github.com/nexiles/nexiles.buildtools
-  siemens                                  draft           Stefan Eletzhofer    https://github.com/nexiles/siemens
-  siemens.tdsm                             draft           Stefan Eletzhofer    https://github.com/nexiles/siemens.tdsm
-  macgregor                                draft           Stefan Eletzhofer    https://github.com/nexiles/macgregor
-  frenco.baselines                         private         Stefan Eletzhofer    https://github.com/nexiles/frenco.baselines
-  siemens.saveas                           private         Ramon Bartl          https://github.com/nexiles/siemens.saveas
-  macgregor.drawinglist                    draft           Stefan Eletzhofer    https://github.com/nexiles/macgregor.drawinglist
-  cargotec.erp                             draft           Ramon Bartl          https://github.com/nexiles/cargotec.erp
-  test3                                    private         Jan Börner           https://github.com/nexiles/nexiles.buildtools/milestones/nexiles-buildtools%200.1.0
-  test                                     private         Jan Börner           https://github.com/nexiles/test
+  nexiles.gateway.fileservice              released        Stefan Eletzhofer    https://github.com/nexiles/nexiles.gateway.fileservice                                  private         Jan Börner           https://github.com/nexiles/test 
+  ..............
 
 
 **nxdocserver delete_doc** delete documentation.
