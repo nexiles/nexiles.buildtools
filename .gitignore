@@ -3,3 +3,6 @@ docs/_build
 build/
 dist/
 nxdocserver.egg-info/
+nexiles.buildtools.sublime-workspace
+.ipython
+*.orig
