@@ -18,7 +18,7 @@ commandline interface.
 Important
 ==========
 
-**Only small letters are allowed by using the nxdocserver tools.**
+**Only small letters are allowed by using the nxdocserver tools. When you use big letters the backend of the docserver get's confused.**
 
 Commands
 ========
