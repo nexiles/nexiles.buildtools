@@ -1,0 +1,26 @@
+{
+	"folders":
+	[
+	{
+			"follow_symlinks": true,
+			"name": "Project root",
+			"folder_exclude_patterns": ["*.egg", "*.egg-info", "vendor", "src", "docs",  ".ipython"],
+			"file_exclude_patterns": ["*.egg"],
+			"path": "."
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Documentation",
+			"folder_exclude_patterns": ["*.egg", "*.egg-info", "vendor", ".ipython"],
+			"file_exclude_patterns": ["*.egg"],
+			"path": "docs/"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "nxdocserver",
+			"folder_exclude_patterns": ["*.egg", "*.egg-info", "vendor", ".ipython"],
+			"file_exclude_patterns": ["*.egg"],
+			"path": "nxdocserver"
+		}
+	]
+}
