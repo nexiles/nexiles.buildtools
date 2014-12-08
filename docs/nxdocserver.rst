@@ -15,6 +15,11 @@ Introduction
 This script allows you to manage documentation meta data and files via a
 commandline interface.
 
+Important
+==========
+
+**Only small letters are allowed by using the nxdocserver tools.**
+
 Commands
 ========
 
