@@ -54,7 +54,7 @@ from gateway import reload
 
 # license file related configuration
 # --------------------------------
-env.customer_list = "nexiles settr cargotec rotator mtc schaeffler"
+env.customer_list = "nexiles settr cargotec rotator mtc schaeffler frenco"
 env.license_tpl   = """# -*- coding: utf-8 -*-
 LICENSE = {
         "customer_id": "%(customer)s",
