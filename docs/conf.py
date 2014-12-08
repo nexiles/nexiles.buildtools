@@ -26,10 +26,10 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.autodoc','rst2pdf.pdfbuilder']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['_templates',os.path.expanduser("~/develop/nexiles/NxSphinx/templates")]
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -103,7 +103,10 @@ html_theme = 'bootstrap'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+bootstrap_path = sphinx_bootstrap_theme.get_html_theme_path()
+bootstrap_path = bootstrap_path[0]
+nexiles_path = os.path.expanduser("~/develop/nexiles/NxSphinx/themes")
+html_theme_path = ['_themes',nexiles_path,bootstrap_path]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -124,7 +127,7 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['_static',os.path.expanduser("~/develop/nexiles/NxSphinx/static")]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -132,7 +135,7 @@ html_static_path = ['_static']
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -217,8 +220,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'nexilesbuildtools', u'nexiles.buildtools Documentation',
-     [u'nexiles GmbH'], 1)
+    (master_doc, htmlhelp_basename, project, [copyright], 1)
+
 ]
 
 # If true, show URL addresses after external links.
@@ -231,8 +234,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'nexilesbuildtools', u'nexiles.buildtools Documentation',
-   u'nexiles GmbH', 'nexilesbuildtools', 'One line description of project.',
+   (master_doc, htmlhelp_basename, project, copyright, htmlhelp_basename, 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -247,3 +249,114 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+epub_title = project
+epub_author = copyright
+epub_publisher = copyright
+epub_copyright = copyright
+epub_theme = 'nexiles_epub_theme'
+epub_exclude_files = ['_static/opensearch.xml', '_static/doctools.js',
+    '_static/jquery.js', '_static/searchtools.js', '_static/underscore.js',
+    '_static/basic.css', 'search.html', '_static/websupport.js']
+epub_cover = ("_static/cover.png", "epub-cover.html")
+epub_tocdepth = 1
+epub_tocdup = False
+
+# -- Options for PDF output --------------------------------------------------
+
+# Grouping the document tree into PDF files. List of tuples
+# (source start file, target name, title, author, options).
+#
+# If there is more than one author, separate them with \\.
+# For example: r'Guido van Rossum\\Fred L. Drake, Jr., editor'
+#
+# The options element is a dictionary that lets you override
+# this config per-document.
+# For example,
+# ('index', u'MyProject', u'My Project', u'Author Name',
+#  dict(pdf_compressed = True))
+# would mean that specific document would be compressed
+# regardless of the global pdf_compressed setting.
+
+pdf_documents = [
+    ('index', htmlhelp_basename, project, copyright),
+]
+
+# A comma-separated list of custom stylesheets. Example:
+pdf_stylesheets = ['a4','jasmin']
+
+# A list of folders to search for stylesheets. Example:
+pdf_style_path = [os.path.expanduser("~/develop/nexiles/NxSphinx/pdfstyles"), '_styles']
+
+# Create a compressed PDF
+# Use True/False or 1/0
+# Example: compressed=True
+pdf_compressed = True
+
+# A colon-separated list of folders to search for fonts. Example:
+pdf_font_path = [os.path.expanduser("~/develop/nexiles/NxSphinx/static/fonts")]
+
+# Language to be used for hyphenation support
+pdf_language = "de_DE"
+
+# Mode for literal blocks wider than the frame. Can be
+# overflow, shrink or truncate
+pdf_fit_mode = "truncate"
+
+# Section level that forces a break page.
+# For example: 1 means top-level sections start in a new page
+# 0 means disabled
+pdf_break_level = 2
+
+# When a section starts in a new page, force it to be 'even', 'odd',
+# or just use 'any'
+pdf_breakside = 'any'
+
+# Insert footnotes where they are defined instead of
+# at the end.
+#pdf_inline_footnotes = True
+
+# verbosity level. 0 1 or 2
+pdf_verbosity = 1
+
+# If false, no index is generated.
+pdf_use_index = True
+
+# If false, no modindex is generated.
+pdf_use_modindex = False
+
+# If false, no coverpage is generated.
+#pdf_use_coverpage = False
+
+# Name of the cover page template to use
+#pdf_cover_template = os.path.expanduser("~/develop/nexiles/NxSphinx/templates/pdf-cover.tmpl")
+
+# Documents to append as an appendix to all manuals.
+#pdf_appendices = []
+
+# Enable experimental feature to split table cells. Use it
+# if you get "DelayedTable too big" errors
+#pdf_splittables = False
+
+# Set the default DPI for images
+pdf_default_dpi = 300
+
+# Enable rst2pdf extension modules (default is only vectorpdf)
+# you need vectorpdf if you want to use sphinx's graphviz support
+pdf_extensions = ['vectorpdf']
+
+# Page template name for "regular" pages
+pdf_page_template = 'cutePage'
+
+# Show Table Of Contents at the beginning?
+pdf_use_toc = True
+
+# How many levels deep should the table of contents be?
+pdf_toc_depth = 3
+
+# Add section number to section references
+pdf_use_numbered_links = False
+
+# Background images fitting mode
+pdf_fit_background_mode = 'scale'
+

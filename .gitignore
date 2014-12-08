@@ -1,2 +1,8 @@
 docs/_build
 *.pyc
+build/
+dist/
+nxdocserver.egg-info/
+nexiles.buildtools.sublime-workspace
+.ipython
+*.orig

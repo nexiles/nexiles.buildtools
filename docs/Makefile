@@ -10,6 +10,18 @@ PROJECT_NAME  = nexiles.buildtools
 PUBLIC_DIR    = /srv/docs/internal/$(PROJECT_NAME)/$(VERSION)
 PUBLIC_HOST   = docs.nexiles.com
 PUBLIC        = $(PUBLIC_HOST):$(PUBLIC_DIR)
+PAPER         = a4
+BUILDDIR      = _build
+FILE_NAME     = nexilesbuildtools
+EPUBNAME      = nexilesbuildtools
+
+PAPEROPTS= -D latex_elements.pointsize=11pt -D latex_elements.preamble=\\usepackage{mfgan-bw} \
+-D pygments_style=bw -D black_and_white=True -D code_example_wrap=67 \
+-D latex_show_pagerefs=True
+
+SCREENOPTS= -D latex_elements.pointsize=12pt -D latex_elements.classoptions=,openany,oneside \
+-D latex_elements.preamble=\\usepackage{mfgan} \
+-D code_example_wrap=67
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -23,10 +35,10 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-.PHONY: help clean html preview dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
+.PHONY: help clean html preview pdf pdf-bw dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
 
 help:
-	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "Please use \'make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
 	@echo "  preview    open the generated html index file in browser"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
@@ -50,7 +62,8 @@ help:
 	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
-
+	@echo "	 pdf        to make a fancy pdf"
+	@echo "  pdf-bw     to make a black and white pdf"
 clean:
 	rm -rf $(BUILDDIR)/*
 
@@ -67,6 +80,18 @@ public:
 	ssh $(PUBLIC_HOST) "mkdir -p $(PUBLIC_DIR)"
 	scp -r $(BUILDDIR)/html/* $(PUBLIC)
 	ssh $(PUBLIC_HOST) "cd $(PUBLIC_DIR) && cd .. && rm -f latest && ln -s $(VERSION) latest"
+
+pdf:
+	$(SPHINXBUILD) -b pdf $(ALLSPHINXOPTS) _build/pdf
+	@echo
+	@echo "Build finished. The PDF files are in _build/pdf."
+
+pdf-bw:
+	$(SPHINXBUILD) -b latex -t black_and_white $(PAPEROPTS) $(ALLSPHINXOPTS) $(LATEX-BW)
+	sed -i .bak -f process-latex $(LATEX-BW)/$(FILE_NAME).tex
+	sed -i .bak '/\\setcounter{page}{1}/d' $(LATEX-BW)/sphinxmanual.cls
+	rsync -a latex/ $(LATEX-BW)/
+	$(MAKE) -C $(LATEX-BW)/ pdf
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
