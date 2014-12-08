@@ -24,16 +24,16 @@ Important
 Commands
 ========
 
-The following commands can be used::
+The following commands can be used
 
-    create_doc
-    create_project
-    delete_doc
-    delete_project
-    list_doc
-    list_projects
-    update_doc
-    update_project
+    - create_doc
+    - create_project
+    - delete_doc
+    - delete_project
+    - list_doc
+    - list_projects
+    - update_doc
+    - update_project
 
 For every command there is the detail for the documentation as well as for the
 project. 
@@ -46,18 +46,17 @@ project.
 +-------------------------------+-----------------------------+------------------------------+---------------------------------+
 
 
-To receive more information on how to use the commands execute them with the
---help flag. ::
+To receive more information on how to use the commands, execute every command with the
+--help flag. Options taged with **[required]** are required for the certain command::
 
-  $ nxdocserver create_doc --help
-  $ nxdocserver create_project --help
-  $ nxdocserver update_doc --help
-  $ nxdocserver update_project --help
-  $ nxdocserver list_docs --help
-  $ nxdocserver list_projects --help
-  $ nxdocserver delete_doc --help
-  $ nxdocserver delete_project --help
+  $ nxdocserver COMMAND_NAMEE --help
+    Information about the command.
 
+    Options:
+      --projInformation about the commandparent project
+      --title TEXT    Title of the project  [required]
+      --github TEXT   GitHub URL of the project
+      --help          Show this message and exit.
 
 Configuration
 =============
@@ -80,11 +79,22 @@ named **.nxdocserver** and match the following schema::
 Installation
 ============
 
-::
+To install the **nxdcoserver** command you've to follow 3 steps:
+    
+    - Clone the git repo
 
-$ cd $project
-$ mkvirtualenv -a $(pwd) -r requirements.txt nexiles.buildtools
-$ python setup.py install
+    - Go to the project home directory
+
+    - Create a virtualenv and install the requirements
+
+    - Run the python install script
+
+    ::
+
+    $ git clone git@github.com:nexiles/nexiles.buildtools.git
+    $ cd $PROJECT_HOME
+    $ mkvirtualenv -a $(pwd) -r requirements.txt nexiles.buildtools
+    $ python setup.py install
 
 
 Command line usage
@@ -105,18 +115,23 @@ that are required and the Options which are not. ::
     --help          Show this message and exit.
 
 
-As mentioned above, there are several commands that can be applied to the
-nxdocserver. When you want to use one of these commands, you have to say
-in Terminal:
+To get informations about a certain command typ **--help**.
 
-**nxdocserver create_project**.
+**nxdocserver create_project**
+------------------------------
+
+To create a project you've to use the **create_project** command like in the
+Example.
 
 Example::
 
     $ nxdocserver create_project --title test
     [localhost] local: mkdir -p /Users/jwycislok/develop/Trash/FakeBox/test
 
-**nxdocserver create_doc**. This is a command to create a new documentation.
+**nxdocserver create_doc** 
+--------------------------
+
+This is a command to create a new documentation.
 And when you want to see more informations or options about this command.
 
 Example::
@@ -129,26 +144,35 @@ Example::
      extracting: index.html
 
 
-**nxdocserver update_doc** update a existing documentation.
+**nxdocserver update_doc**
+--------------------------
 
-nxdocserver update_doc has no output.
+To update a documentation you've to use the **update_doc** command like in the
+Example.
 
-foo-0-1.0 is replaced by the title attribute in plone.
+.. caution:: nxdocserver update_doc has no output. foo-0-1.0 is replaced by the title attribute in plone.
 
 Example::
 
   $ nxdocserver update_doc foo-0-1.0 --project test
 
-**nxdocserver update_project** update a existing documentation.
+**nxdocserver update_project**
+------------------------------
+
+
+This commands updates a existing project.
 
 Example::
 
   $ nxdocserver update_project test
 
-nxdocserver update_project has no output.
+.. caution:: nxdocserver update_project has no output.
 
 
-**nxdocserver list_docs** list all documentation on the server.
+**nxdocserver list_docs**
+-------------------------
+
+This command lists all documentation on the server.
 
 Example::
 
@@ -163,7 +187,10 @@ Example::
   .............
 
 
-**nxdocserver list_projects** list all projects on the server.
+**nxdocserver list_projects** 
+-----------------------------
+
+This command lists all projects on the server.
 
 Example::
 
@@ -177,17 +204,24 @@ Example::
   ..............
 
 
-**nxdocserver delete_doc** delete documentation.
-nxdocserver delete_doc has no output.
-foo-0-1.0 is replaced by the title attribute in plone.
+**nxdocserver delete_doc** 
+--------------------------
+
+This command deletes a documentation.
+
+.. caution:: nxdocserver delete_doc has no output. foo-0-1.0 is replaced by the title attribute in plone.
 
 Example::
 
   $ nxdocserver delete_doc foo-0-1.0 --project test
 
 
-**nxdocserver delete_project** delete documentation.
-nxdocserver delete_project has no output.
+**nxdocserver delete_project** 
+------------------------------
+
+
+This commands deletes a documentation.
+.. caution::  nxdocserver delete_project has no output.
 
 Example::
 
